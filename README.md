@@ -32,7 +32,7 @@ I added a **Product Comparison View**. It’s a complex feature where you can pi
 ## 📂 Project Structure
 I kept the folder structure clean so any engineer can jump in and understand it:
 
-```plaintext
+```
 ├── /app
 │   ├── /components
 │   │   ├── FilterSidebar.tsx  # The navigation and filter controls
@@ -45,7 +45,10 @@ I kept the folder structure clean so any engineer can jump in and understand it:
 │   │   ├── productUtils.ts    # Pure logic (sorting, formatting names)
 │   │   └── fetcher.ts         # Data fetching wrapper with Abort signals
 │   └── HomeClient.tsx         # The Orchestrator (bringing it all together)
-🛠️ Technical Choices (The Stack)
+
+```
+
+## 🛠️ Technical Choices (The Stack)
 Next.js 15: Chosen for its hybrid rendering (SSR/CSR).
 
 Tailwind CSS: I used a custom "Amazon" palette (#febd69 and #131921) to give it a professional, marketplace feel.
@@ -53,11 +56,12 @@ Tailwind CSS: I used a custom "Amazon" palette (#febd69 and #131921) to give it 
 No External State (Redux/Zustand): I purposely avoided these. I wanted to prove that with useSearchParams and native React hooks, you can build a faster, lighter app without the "bloat" of big libraries.
 
 ### 🚀 How to Run Locally
+
 # Clone the repo:
 git clone <link>
 
-Install the goods:
+# Install the goods:
 npm install
 
-run:
+# run:
 npm run dev
