@@ -34,11 +34,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const { products: initialProducts } = await fetchProducts(params);
 
   return (
-    <div className="min-h-screen bg-amazon-bg">
-      <div className="max-w-375 mx-auto px-0 py-0">
-      <Navbar/>
-        <HomeClient initialProducts={initialProducts} />
-      </div>
-    </div>
+    <>
+      <Navbar />
+      <HomeClient preloadedProducts={initialProducts} />
+    </>
   );
 }

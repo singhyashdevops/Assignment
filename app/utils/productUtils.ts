@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Product } from '../types/types';
 
-export const MAX_PRICE_LIMIT = 10000000;
-export const PRODUCTS_PER_FETCH = 20;
+export const maxLimit = 50000;
+export const productNo = 20;
 
 export const categoryMenu = [
   "beauty", "fragrances", "furniture", "groceries", "home-decoration",
@@ -32,7 +32,6 @@ export const filterAndSortProducts = (items: Product[], filters: any) => {
     return matchesSearch && matchesPrice && matchesRating && matchesCategory;
   });
 
-  // Sorting Logic
   if (filters.sortBy === 'price-asc') {
     filtered.sort((a, b) => a.price - b.price);
   } else if (filters.sortBy === 'price-desc') {
@@ -40,10 +39,8 @@ export const filterAndSortProducts = (items: Product[], filters: any) => {
   } else if (filters.sortBy === 'alpha') {
     filtered.sort((a, b) => a.title.localeCompare(b.title));
   } else if (filters.sortBy === 'rating-desc') {
-    // Rating: High to Low
     filtered.sort((a, b) => b.rating - a.rating);
   } else if (filters.sortBy === 'rating-asc') {
-    // Rating: Low to High
     filtered.sort((a, b) => a.rating - b.rating);
   }
 

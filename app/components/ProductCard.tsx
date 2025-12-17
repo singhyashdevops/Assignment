@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { Product } from '../types/types';
 
 interface ProductCardProps {
@@ -14,22 +13,27 @@ export default function ProductCard({ product, view }: ProductCardProps) {
 
   return (
     <div className={`bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-shadow duration-300 flex ${isList ? 'flex-row h-64' : 'flex-col h-full'}`}>
-      
+
       <div className={`relative bg-amazon-gray-light shrink-0 ${isList ? 'w-64 h-full' : 'w-full h-48'}`}>
         <Image src={product.thumbnail} alt={product.title} fill className="object-contain p-4" unoptimized />
         {product.discountPercentage > 10 && (
-          <span className="absolute top-2 left-0 bg-green-600 text-white text-[11px] font-bold px-2 py-1">
-            Limited time deal
-          </span>
+          <>
+            <span className="absolute top-2 left-0 bg-green-600 text-white text-[11px] font-bold px-2 py-1">
+              Limited time deal
+            </span>
+          </>
         )}
       </div>
 
-      <div className="p-3 flex flex-col grow">
-        <Link href={`/product/${product.id}`} className="group">
+      <div className="p-3 flex flex-col grow gap-1">
+        <>
           <h3 className="text-sm font-medium leading-tight group-hover:text-amazon-orange line-clamp-2 mb-1">
             {product.title}
           </h3>
-        </Link>
+          <span className="w-fit bottom-46 left-0 bg-green-600 text-white text-[11px] font-bold px-2 py-1">
+            {product.category}
+          </span>
+        </>
 
         <div className="flex items-center gap-1 mb-1">
           <span className="text-amazon-orange text-sm font-bold">

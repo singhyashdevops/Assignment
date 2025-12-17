@@ -12,10 +12,11 @@ export interface FetchParams {
     limit?: number;
     skip?: number;
     signal?: AbortSignal;
+    revalidate?: number;
 }
 
 export async function fetchProducts(params: FetchParams): Promise<{ products: Product[]; total: number }> {
-    
+
     const url = new URL(API_BASE_URL);
 
     const primaryCategory = params.categories?.[0];
@@ -27,9 +28,11 @@ export async function fetchProducts(params: FetchParams): Promise<{ products: Pr
     url.searchParams.set('limit', String(params.limit || 20));
     url.searchParams.set('skip', String(params.skip || 0));
 
-    const response = await fetch(url.toString(), { 
-        cache: 'no-store',
-        signal: params.signal
+    const response = await fetch(url.toString(), {
+        next: params.revalidate
+            ? { revalidate: params.revalidate }
+            : undefined,
+        signal: params.signal,
     });
 
     if (!response.ok) throw new Error(`Failed to fetch products: ${response.status}`);
