@@ -114,3 +114,10 @@ client/
 ├─ utils/
 │ ├─ fetcher.ts # API fetching logic
 │ ├─ productUtils.ts # Filter, sort, category, price presets
+````
+
+![Screenshots](./app/assets/1.png)
+![Screenshots](./app/assets/2.png)
+![Screenshots](./app/assets/3.png)
+![Screenshots](./app/assets/4.png)
+![Screenshots](./app/assets/5.png)
