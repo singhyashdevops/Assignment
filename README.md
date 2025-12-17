@@ -1,67 +1,148 @@
-# 🛒 Data-Heavy E-Commerce Frontend (Next.js)
+# Data-Heavy E-Commerce Frontend (Next.js)
 
-## 📖 Project Overview
-This isn't just another shopping site; it’s a **high-performance discovery engine**. The core challenge was to build a system that feels "instant" while handling massive amounts of product data, complex filtering, and real-time state synchronization.
+A modern e-commerce front-end built with **Next.js 13**, featuring client-side search, filters, infinite scrolling, and dynamic product display.  
+This project uses **React 18**, **TypeScript**, and **TailwindCSS** for styling. Notifications are implemented using **sonner**.
 
-I built this using **Next.js** (App Router) with a focus on **Headless Architecture**. Every interaction—from searching to toggling a layout—is optimized for speed and user intuition.
+---
 
-### 1. The "Single Source of Truth" (URL State)
-Most developers store filters in a hidden state. I chose to store them in the **URL**. 
-* **Why?** If you find a perfect list of "Laptops under $1000 with 4 stars," you can copy the link and send it to a friend. When they open it, they see exactly what you see. It also makes the "Back" button on your browser work perfectly.
+## 🎯 Core Functionality
 
-### 2. The "Brain" (Custom Hooks & Utils)
-I separated the math and the fetching into a custom hook. This keeps the main file clean.
-* **Debouncing:** I implemented a 500ms delay on search. This means the app waits for you to finish typing before hitting the server. It saves battery for the user and bandwidth for the server.
-* **AbortController:** If you click five categories in one second, It "kill" the previous four requests. Only the last click matters. This prevents the UI from flickering with old data.
+### Product Listing
+- Display products in **grid** and **list** views.
+- Implement **pagination OR infinite scroll** for seamless browsing.
+- Show **skeleton loaders** during data fetch.
 
-### 3. Product Comparison Engine (The Extra Mile)
-I added a **Product Comparison View**. It’s a complex feature where you can pick up to 4 items.
-* **The Logic:** I used a "buffer" state. When you check a box on a product card, it adds that item to a floating drawer. 
-* **The UI:** I built a dynamic table that compares prices and ratings side-by-side. It’s sticky, so it stays at the bottom while you keep shopping.
+### Search
+- **Debounced search input** (300–500ms) to prevent excessive API calls.
+- **Cancelation of previous API requests** using `AbortController` when typing.
+- **X button** to clear the search input.
+- Search term **syncs with URL** to preserve state across reloads.
 
-## 🧩 Key Features
+### Filters
+- **Categories:** Multi-select product categories.
+- **Price Range:** Predefined price presets for easy selection.
+- **Ratings:** Filter products by minimum star rating.
+- **Sorting:** Sort products by price, rating, or alphabetical order.
 
-### 🚀 Performance
-* **Infinite Scroll:** Using the `Intersection Observer API`. Instead of clicking "Next Page," the app just knows when you are near the bottom and silently loads more products.
-* **Skeleton Loaders:** No "Loading..." text. I built custom grey boxes that look like the products so the screen doesn't jump around when data arrives (Zero Layout Shift).
+### Selected Filters UI
+- Active filters are displayed above the product list.
+- Each filter has a `×` button for removal.
+- **Clear All** button resets all filters.
 
-### 🎛️ Advanced Filtering
-* **Hybrid Pass:** The app is smart. It asks the server for the big category list, but handles the fine-tuning (like sorting by price or rating) on the user's device for instant results.
-* **Grid/List Toggle:** Switch between a visual gallery and a detailed list without a single page reload.
+### URL State Management
+- All filters & search parameters are reflected in the URL.
+- Page reload **preserves state**.
+- Browser **back/forward navigation** works as expected.
 
-## 📂 Project Structure
-I kept the folder structure clean so any engineer can jump in and understand it:
+### Notifications
+- **Success Toasts:** Triggered when filters are applied or search is updated.
+- **Error Toasts:** Triggered on API failures or when no products are found.
+- Implemented using **sonner**. Include `<Toaster />` in your layout.
 
-```
-├── /app
-│   ├── /components
-│   │   ├── FilterSidebar.tsx  # The navigation and filter controls
-│   │   ├── ComparisonDrawer.tsx # The sticky comparison matrix
-│   │   ├── ProductCard.tsx    # Memoized component for individual items
-│   │   └── Skeleton.tsx       # Content placeholders for loading states
-│   ├── /hooks
-│   │   └── useProducts.ts     # The "Engine" (API calls & scroll logic)
-│   ├── /utils
-│   │   ├── productUtils.ts    # Pure logic (sorting, formatting names)
-│   │   └── fetcher.ts         # Data fetching wrapper with Abort signals
-│   └── HomeClient.tsx         # The Orchestrator (bringing it all together)
+---
 
-```
+## ⚙️ Tech Stack
 
-## 🛠️ Technical Choices (The Stack)
-Next.js 15: Chosen for its hybrid rendering (SSR/CSR).
+- **Next.js 13 (App Router)**  
+- **React 18**
+- **TypeScript**
+- **TailwindCSS** for styling
+- **sonner** for toast notifications
+- **Fetch API / DummyJSON** for product data
 
-Tailwind CSS: I used a custom "Amazon" palette (#febd69 and #131921) to give it a professional, marketplace feel.
+---
 
-No External State (Redux/Zustand): I purposely avoided these. I wanted to prove that with useSearchParams and native React hooks, you can build a faster, lighter app without the "bloat" of big libraries.
+## 📁 Project Structure
 
-### 🚀 How to Run Locally
+client/
+├─ app/
+│ ├─ page.tsx # Entry page
+│ ├─ HomeClient.tsx # Main component handling products, filters, search, infinite scroll
+├─ components/
+│ ├─ ProductCard.tsx # Product card component
+│ ├─ GridListView.tsx # Toggle between grid and list view
+│ ├─ Skeleton.tsx # Loader skeleton for products
+├─ types/
+│ ├─ types.ts # TypeScript types
+├─ utils/
+│ ├─ fetcher.ts # API fetching logic
+│ ├─ productUtils.ts # Filter, sort, category, price presets
 
-# Clone the repo:
-git clone <link>
 
-# Install the goods:
+---
+
+## 🚀 Setup Instructions
+
+### 1. Clone Repository
+```bash
+git clone <repo-url>
+cd client
+2. Install Dependencies
+bash
+
 npm install
+3. Run Development Server
+bash
 
-# run:
 npm run dev
+Open http://localhost:3000 in your browser.
+
+⚡ Usage
+Searching
+Type keywords in the search bar.
+
+Input is debounced to avoid excessive API calls.
+
+Click the X button to clear the search.
+
+Applying Filters
+Select categories, price ranges, or ratings.
+
+Active filters appear above the product list.
+
+Remove a filter with its × button or Clear All to reset.
+
+Sorting
+Choose sorting from the dropdown: Featured, Price (Low → High / High → Low), Rating, or Name (A → Z).
+
+Infinite Scroll
+Scroll down to automatically load more products.
+
+Layout Toggle
+Switch between grid and list views using the toggle button.
+
+Notifications
+Toasts show updates when filters are applied or errors occur.
+
+Add <Toaster /> in your main layout to enable notifications.
+
+🛠 Customization
+API Source: Modify fetchProducts in utils/fetcher.ts to change backend or mock API.
+
+Categories & Prices: Update categoryMenu and pricePresets in utils/productUtils.ts.
+
+Styling: TailwindCSS classes can be customized for colors, spacing, or layout.
+
+⚠️ Notes & Best Practices
+The app is CSR-focused for fast user interactions.
+
+AbortController cancels pending requests when filters or search change.
+
+Debounced search improves performance and user experience.
+
+URL-driven state ensures shareable links with filters applied.
+
+Skeleton loaders maintain UI stability during data fetch.
+
+🔮 Future Improvements
+Add server-side rendering (SSR) for SEO optimization.
+
+Include category icons or images in filter panel.
+
+Implement multi-level sorting (e.g., rating + price).
+
+Add product caching to reduce repeated API calls.
+
+Include error boundary UI for network failures.
+
+Implement responsive animations for filter and product transitions.

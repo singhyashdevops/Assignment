@@ -7,7 +7,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Product } from './types/types';
 import { fetchProducts } from './utils/fetcher';
-import { categoryMenu, pricePresets, formatCategoryName, filterAndSortProducts, maxLimit, productNo} from './utils/productUtils';
+import { categoryMenu, pricePresets, formatCategoryName, filterAndSortProducts, maxLimit, productNo } from './utils/productUtils';
 import ProductCard from './components/ProductCard';
 import GridListView from './components/GridListView';
 import Skeleton from './components/Skeleton';
@@ -36,7 +36,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
     search: queryParams.get('search') || ''
   });
   const [searchText, setSearchText] = useState(currentFilters.search);
-  
+
   const applyFilter = (filters: typeof currentFilters) => {
     setCurrentFilters(filters);
     updateQueryUrl(filters);
@@ -81,7 +81,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
       setIsLoading(false);
     }
   }, [isLoading, offset, currentFilters, moreAvailable]);
-  
+
   const handleSearchInput = (text: string) => {
     setSearchText(text);
     searchDebounceRef.current && clearTimeout(searchDebounceRef.current);
@@ -91,7 +91,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
       updateQueryUrl(updated);
     }, 500);
   };
-  
+
   useEffect(() => {
     if (firstRenderFlag.current) { firstRenderFlag.current = false; return; }
     setOffset(0);
@@ -99,7 +99,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
     fetchItems(true);
     toast.success("Filter Applied")
   }, [currentFilters]);
-  
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => entries[0].isIntersecting && !isLoading && moreAvailable && fetchItems(),
@@ -115,15 +115,23 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
       <aside className="w-full md:w-64 shrink-0">
         <div className="md:sticky md:top-24 space-y-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
 
-          <section>
+          <section className="relative">
             <h3 className="font-bold text-sm mb-2">Search</h3>
             <input
               type="text"
               placeholder="Search products..."
               value={searchText}
               onChange={e => handleSearchInput(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amazon-orange/20 focus:border-amazon-orange outline-none text-sm transition-all"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amazon-orange/20 focus:border-amazon-orange outline-none text-sm transition-all pr-8"
             />
+            {searchText && (
+              <button
+                onClick={() => handleSearchInput('')}
+                className="absolute right-2 top-9 text-gray-900 hover:text-gray-600 font-bold"
+              >
+                ×
+              </button>
+            )}
           </section>
 
           <section>
@@ -186,7 +194,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
           </section>
 
           <button
-            onClick={() =>[ window.location.href = '/', toast.success("Filter Removed")]}
+            onClick={() => [window.location.href = '/', toast.success("Filter Removed")]}
             className="w-full py-2 text-xs font-bold border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors active:bg-gray-100">
             Clear All
           </button>
