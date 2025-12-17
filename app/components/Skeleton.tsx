@@ -1,7 +1,7 @@
 'use client';
 interface SkeletonLoaderProps { view?: 'grid' | 'list' }
 
-export default function SkeletonLoader({ view = 'grid' }: SkeletonLoaderProps) {
+export default function Skeleton({ view = 'grid' }: SkeletonLoaderProps) {
   const isList = view === 'list';
 
   return (

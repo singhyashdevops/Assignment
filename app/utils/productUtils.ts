@@ -32,10 +32,20 @@ export const filterAndSortProducts = (items: Product[], filters: any) => {
     return matchesSearch && matchesPrice && matchesRating && matchesCategory;
   });
 
-  if (filters.sortBy === 'price-asc') filtered.sort((a, b) => a.price - b.price);
-  else if (filters.sortBy === 'price-desc') filtered.sort((a, b) => b.price - a.price);
-  else if (filters.sortBy === 'alpha') filtered.sort((a, b) => a.title.localeCompare(b.title));
-  else if (filters.sortBy === 'rating-dec') filtered.sort((a, b) => b.rating - a.rating);
+  // Sorting Logic
+  if (filters.sortBy === 'price-asc') {
+    filtered.sort((a, b) => a.price - b.price);
+  } else if (filters.sortBy === 'price-desc') {
+    filtered.sort((a, b) => b.price - a.price);
+  } else if (filters.sortBy === 'alpha') {
+    filtered.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (filters.sortBy === 'rating-desc') {
+    // Rating: High to Low
+    filtered.sort((a, b) => b.rating - a.rating);
+  } else if (filters.sortBy === 'rating-asc') {
+    // Rating: Low to High
+    filtered.sort((a, b) => a.rating - b.rating);
+  }
 
   return filtered;
 };

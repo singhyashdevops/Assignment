@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 export const metadata = {
   title: 'QuickCart',
-  description: 'QuickCart: Easy-to-use e-commerce store with search and filters.',
+  description: 'QuickCart: An E-Commerce Solution.',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
