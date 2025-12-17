@@ -114,4 +114,3 @@ client/
 ├─ utils/
 │ ├─ fetcher.ts # API fetching logic
 │ ├─ productUtils.ts # Filter, sort, category, price presets
-```
