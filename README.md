@@ -52,8 +52,55 @@ This project uses **React 18**, **TypeScript**, and **TailwindCSS** for styling.
 
 ---
 
+## 🚀 Setup Instructions
+
+### 1. Clone Repository
+```bash
+git clone <repo-url>
+cd client
+2. Install Dependencies - npm install
+3. Run Development Server - npm run dev - Open http://localhost:3000 in your browser.
+```
+
+## Usage
+### Searching
+-- Type keywords in the search bar.
+-- Input is debounced to avoid excessive API calls.
+-- Click the X button to clear the search.
+
+### Applying Filters
+--Select categories, price ranges, or ratings.
+-- Active filters appear above the product list.
+-- Remove a filter with its × button or Clear All to reset.
+
+### Sorting
+-- Choose sorting from the dropdown: Featured, Price (Low → High / High → Low), Rating, or Name (A → Z).
+
+### Infinite Scroll
+-- Scroll down to automatically load more products.
+
+### Layout Toggle
+-- Switch between grid and list views using the toggle button.
+
+### Notifications
+-- Toasts show updates when filters are applied or errors occur.
+-- Add <Toaster /> in your main layout to enable notifications.
+
+## API Source
+-- Modify fetchProducts in utils/fetcher.ts to change backend or mock API.
+-- Categories & Prices: Update categoryMenu and pricePresets in utils/productUtils.ts.
+-- Styling: TailwindCSS classes can be customized for colors, spacing, or layout.
+
+## Notes & Best Practices
+-- The app is CSR-focused for fast user interactions.
+-- AbortController cancels pending requests when filters or search change.
+-- Debounced search improves performance and user experience.
+-- URL-driven state ensures shareable links with filters applied.
+-- Skeleton loaders maintain UI stability during data fetch.
+
 ## 📁 Project Structure
 
+````
 client/
 ├─ app/
 │ ├─ page.tsx # Entry page
@@ -67,82 +114,4 @@ client/
 ├─ utils/
 │ ├─ fetcher.ts # API fetching logic
 │ ├─ productUtils.ts # Filter, sort, category, price presets
-
-
----
-
-## 🚀 Setup Instructions
-
-### 1. Clone Repository
-```bash
-git clone <repo-url>
-cd client
-2. Install Dependencies
-bash
-
-npm install
-3. Run Development Server
-bash
-
-npm run dev
-Open http://localhost:3000 in your browser.
-
-⚡ Usage
-Searching
-Type keywords in the search bar.
-
-Input is debounced to avoid excessive API calls.
-
-Click the X button to clear the search.
-
-Applying Filters
-Select categories, price ranges, or ratings.
-
-Active filters appear above the product list.
-
-Remove a filter with its × button or Clear All to reset.
-
-Sorting
-Choose sorting from the dropdown: Featured, Price (Low → High / High → Low), Rating, or Name (A → Z).
-
-Infinite Scroll
-Scroll down to automatically load more products.
-
-Layout Toggle
-Switch between grid and list views using the toggle button.
-
-Notifications
-Toasts show updates when filters are applied or errors occur.
-
-Add <Toaster /> in your main layout to enable notifications.
-
-🛠 Customization
-API Source: Modify fetchProducts in utils/fetcher.ts to change backend or mock API.
-
-Categories & Prices: Update categoryMenu and pricePresets in utils/productUtils.ts.
-
-Styling: TailwindCSS classes can be customized for colors, spacing, or layout.
-
-⚠️ Notes & Best Practices
-The app is CSR-focused for fast user interactions.
-
-AbortController cancels pending requests when filters or search change.
-
-Debounced search improves performance and user experience.
-
-URL-driven state ensures shareable links with filters applied.
-
-Skeleton loaders maintain UI stability during data fetch.
-
-🔮 Future Improvements
-Add server-side rendering (SSR) for SEO optimization.
-
-Include category icons or images in filter panel.
-
-Implement multi-level sorting (e.g., rating + price).
-
-Add product caching to reduce repeated API calls.
-
-Include error boundary UI for network failures.
-
-Implement responsive animations for filter and product transitions.
+```
