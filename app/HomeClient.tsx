@@ -7,17 +7,11 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Product } from './types/types';
 import { fetchProducts } from './utils/fetcher';
-import {
-  categoryMenu,
-  pricePresets,
-  formatCategoryName,
-  filterAndSortProducts,
-  maxLimit,
-  productNo
-} from './utils/productUtils';
+import { categoryMenu, pricePresets, formatCategoryName, filterAndSortProducts, maxLimit, productNo} from './utils/productUtils';
 import ProductCard from './components/ProductCard';
 import GridListView from './components/GridListView';
 import Skeleton from './components/Skeleton';
+import { toast } from 'sonner';
 
 export default function HomeClient({ preloadedProducts }: { preloadedProducts: Product[] }) {
   const queryParams = useSearchParams();
@@ -33,7 +27,6 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
   const [layoutView, setLayoutView] = useState<'grid' | 'list'>('grid');
   const [offset, setOffset] = useState(preloadedProducts.length || 0);
   const [moreAvailable, setMoreAvailable] = useState(true);
-
   const [currentFilters, setCurrentFilters] = useState({
     categories: queryParams.get('categories')?.split(',').filter(Boolean) || [] as string[],
     minPrice: Number(queryParams.get('minPrice')) || 0,
@@ -43,6 +36,11 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
     search: queryParams.get('search') || ''
   });
   const [searchText, setSearchText] = useState(currentFilters.search);
+  
+  const applyFilter = (filters: typeof currentFilters) => {
+    setCurrentFilters(filters);
+    updateQueryUrl(filters);
+  };
 
   const updateQueryUrl = useCallback((filters: typeof currentFilters) => {
     const params = new URLSearchParams();
@@ -75,13 +73,15 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
       setItemList(prev => reset ? filteredItems : [...prev, ...filteredItems]);
       setOffset(currentOffset + data.products.length);
       setMoreAvailable(data.products.length === productNo);
+      toast.success("Product(s) fetched")
     } catch (err: any) {
       if (err.name !== 'AbortError') setMoreAvailable(false);
+      toast.error("Something went wrong")
     } finally {
       setIsLoading(false);
     }
   }, [isLoading, offset, currentFilters, moreAvailable]);
-
+  
   const handleSearchInput = (text: string) => {
     setSearchText(text);
     searchDebounceRef.current && clearTimeout(searchDebounceRef.current);
@@ -91,36 +91,30 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
       updateQueryUrl(updated);
     }, 500);
   };
-
+  
   useEffect(() => {
     if (firstRenderFlag.current) { firstRenderFlag.current = false; return; }
     setOffset(0);
     setMoreAvailable(true);
     fetchItems(true);
+    toast.success("Filter Applied")
   }, [currentFilters]);
-
+  
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => entries[0].isIntersecting && !isLoading && moreAvailable && fetchItems(),
       { threshold: 0.1 }
     );
-    if (loaderRef.current) observer.observe(loaderRef.current);
+    if (loaderRef.current) observer.observe(loaderRef.current)
     return () => observer.disconnect();
   }, [fetchItems, isLoading, moreAvailable]);
-
-  const applyFilter = (filters: typeof currentFilters) => {
-    setCurrentFilters(filters);
-    updateQueryUrl(filters);
-  };
 
   return (
     <div className="flex flex-col md:flex-row gap-4 p-2 md:p-5 bg-gray-50 min-h-screen">
 
-      {/* Sidebar Filters */}
       <aside className="w-full md:w-64 shrink-0">
         <div className="md:sticky md:top-24 space-y-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
 
-          {/* Search */}
           <section>
             <h3 className="font-bold text-sm mb-2">Search</h3>
             <input
@@ -132,7 +126,6 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
             />
           </section>
 
-          {/* Price */}
           <section>
             <h3 className="font-bold text-sm mb-2">Price</h3>
             <div className="grid grid-cols-2 gap-2">
@@ -151,7 +144,6 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
             </div>
           </section>
 
-          {/* Ratings */}
           <section>
             <h3 className="font-bold text-sm mb-2">Reviews</h3>
             <div className="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 scrollbar-hide">
@@ -171,7 +163,6 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
             </div>
           </section>
 
-          {/* Categories */}
           <section>
             <h3 className="font-bold text-sm mb-2">Categories</h3>
             <div className="max-h-40 md:max-h-64 overflow-y-auto pr-2 space-y-1 text-xs custom-scrollbar">
@@ -195,17 +186,15 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
           </section>
 
           <button
-            onClick={() => window.location.href = '/'}
+            onClick={() =>[ window.location.href = '/', toast.success("Filter Removed")]}
             className="w-full py-2 text-xs font-bold border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors active:bg-gray-100">
             Clear All
           </button>
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 space-y-4">
 
-        {/* Active Filters */}
         {(currentFilters.categories.length || currentFilters.minPrice > 0 || currentFilters.maxPrice < maxLimit || currentFilters.minRating > 0 || currentFilters.search) && (
           <div className="flex flex-wrap gap-2 mb-2">
             {currentFilters.search && (
@@ -238,7 +227,6 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
           </div>
         )}
 
-        {/* Header */}
         <header className="bg-white p-3 md:p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row gap-3 justify-between sm:items-center">
           <div>
             <h2 className="text-lg md:text-xl font-bold italic text-gray-800">Results</h2>
@@ -261,7 +249,6 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
           </div>
         </header>
 
-        {/* Products */}
         <div className={layoutView === 'grid'
           ? "grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4"
           : "flex flex-col gap-3 md:gap-4"}>
@@ -275,7 +262,6 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
             <button onClick={() => window.location.href = '/'} className="mt-2 text-amazon-orange font-bold text-sm underline">Reset search</button>
           </div>
         )}
-
         {moreAvailable && <div ref={loaderRef} className="h-10 w-full" />}
       </main>
     </div>

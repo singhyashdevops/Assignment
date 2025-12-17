@@ -1,3 +1,4 @@
+import { Toaster } from 'sonner';
 import './globals.css'
 import type { ReactNode } from 'react';
 
@@ -11,6 +12,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body>
         {children}
+        <Toaster visibleToasts={1} position="bottom-center" />
       </body>
     </html>
   );
