@@ -29,9 +29,9 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
   const [moreAvailable, setMoreAvailable] = useState(true);
   const [currentFilters, setCurrentFilters] = useState({
     categories: queryParams.get('categories')?.split(',').filter(Boolean) || [] as string[],
-    minPrice: Number(queryParams.get('minPrice')) || 0,
-    maxPrice: Number(queryParams.get('maxPrice')) || maxLimit,
-    minRating: Number(queryParams.get('minRating')) || 0,
+    minPrice: Math.max(0, Number(queryParams.get('minPrice')) || 0),
+    maxPrice: Math.max(0, Number(queryParams.get('maxPrice')) || maxLimit),
+    minRating: Math.min(5, Math.max(0, Number(queryParams.get('minRating')) || 0)),
     sortBy: queryParams.get('sortBy') || '',
     search: queryParams.get('search') || ''
   });
@@ -44,20 +44,12 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
 
   const updateQueryUrl = useCallback((filters: typeof currentFilters) => {
     const params = new URLSearchParams();
-    if (filters.categories.length) {
-      params.set('categories', filters.categories.join(','));
-      params.set('minPrice', filters.minPrice.toString());
-      params.set('maxPrice', filters.maxPrice.toString());
-    }
-    if (filters.minRating > 0) {
-      params.set('minRating', filters.minRating.toString())
-    }
-    if (filters.sortBy) {
-      params.set('sortBy', filters.sortBy)
-    }
-    if (filters.search) {
-      params.set('search', filters.search)
-    }
+    if (filters.categories.length) params.set('categories', filters.categories.join(','));
+    params.set('minPrice', filters.minPrice.toString());
+    params.set('maxPrice', filters.maxPrice.toString());
+    if (filters.minRating > 0) params.set('minRating', filters.minRating.toString());
+    if (filters.sortBy) params.set('sortBy', filters.sortBy);
+    if (filters.search) params.set('search', filters.search);
     navigation.push(`/?${params.toString()}`, { scroll: false });
   }, [navigation]);
 
@@ -100,10 +92,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
   };
 
   useEffect(() => {
-    if (firstRenderFlag.current) {
-      firstRenderFlag.current = false;
-      return;
-    }
+    if (firstRenderFlag.current) { firstRenderFlag.current = false; return; }
     setOffset(0);
     setMoreAvailable(true);
     fetchItems(true);
@@ -112,7 +101,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => entries[0].isIntersecting && !isLoading && moreAvailable && fetchItems(),
-      { threshold: 0.4 }
+      { threshold: 0.1 }
     );
     if (loaderRef.current) observer.observe(loaderRef.current)
     return () => observer.disconnect();
@@ -179,12 +168,13 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
                 <button
                   key={star}
                   onClick={() => applyFilter({ ...currentFilters, minRating: star })}
-                  className={`flex bg-red-200 items-center gap-1.5 text-xs whitespace-nowrap px-2 py-1 md:px-0 md:py-0 border md:border-0 rounded-full  transition-all ${currentFilters.minRating === star ? 'bg-amazon-orange/10 border-amazon-orange text-amazon-orange font-bold' : 'bg-white border-gray-200 text-gray-600'
+                  className={`flex bg-red-200 items-center gap-1.5 text-xs whitespace-nowrap px-2 py-1 md:px-0 md:py-0 border md:border-0 rorounded-full md:rounded-none transition-all ${currentFilters.minRating === star ? 'bg-amazon-orange/10 border-amazon-orange text-amazon-orange font-bold' : 'bg-white border-gray-200 text-gray-600'
                     }`}
                 >
-                  <span className="text-amazon-orange text-sm leading-none px-2 py-1 ">
+                  <span className="text-amazon-orange text-sm leading-none p-1">
                     {"★".repeat(star)}{"☆".repeat(5 - star)}
                   </span>
+                  <span className="hidden md:inline">& Up</span>
                 </button>
               ))}
             </div>
@@ -247,8 +237,8 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
             ))}
 
             {(currentFilters.minPrice > 0 || currentFilters.maxPrice < maxLimit) && (
-              <span className="flex items-center bg-amazon-orange/10 text-amazon-orange px-2 py-1 rounded-full text-xs">
-                ${currentFilters.minPrice} - ${currentFilters.maxPrice}
+              <span className={`flex items-center px-2 py-1 rounded-full text-xs ${currentFilters.maxPrice <= 0 ? 'bg-red-100 text-red-700' : 'bg-amazon-orange/10 text-amazon-orange'}`}>
+                {currentFilters.maxPrice <= 0 ? "Invalid Price Range" : `$${currentFilters.minPrice} - $${currentFilters.maxPrice}`}
                 <button className="ml-1 font-bold" onClick={() => applyFilter({ ...currentFilters, minPrice: 0, maxPrice: maxLimit })}>×</button>
               </span>
             )}
@@ -308,9 +298,24 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
         </div>
 
         {!isLoading && itemList.length === 0 && (
-          <div className="text-center py-20 bg-white rounded-xl border border-dashed border-gray-300">
-            <p className="text-gray-500">No products match your filters.</p>
-            <button onClick={() => window.location.href = '/'} className="mt-2 text-amazon-orange font-bold text-sm underline">Reset search</button>
+          <div className="text-center py-16 bg-white rounded-xl border-2 border-dashed border-red-100 shadow-inner">
+            <div className="text-5xl mb-4">💸</div>
+            {currentFilters.minPrice <= 0 ? (
+              <div className="space-y-2">
+                <p className="text-gray-500 max-w-xs mx-auto text-sm">Please select a valid range to view products.</p>
+                <button
+                  onClick={() => applyFilter({ ...currentFilters, minPrice: 0, maxPrice: maxLimit })}
+                  className="mt-4 px-8 py-2.5 bg-amazon-orange text-white rounded-full font-bold shadow-lg hover:scale-105 transition-transform"
+                >
+                  Reset
+                </button>
+              </div>
+            ) : (
+              <div>
+                <p className="text-gray-500 font-medium">No products match your filters.</p>
+                <button onClick={() => window.location.href = '/'} className="text-amazon-blue underline mt-2">Clear all filters</button>
+              </div>
+            )}
           </div>
         )}
         {moreAvailable && <div ref={loaderRef} className="h-10 w-full" />}

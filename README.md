@@ -64,36 +64,36 @@ cd client
 
 ## Usage
 ### Searching
--- Type keywords in the search bar.
--- Input is debounced to avoid excessive API calls.
--- Click the X button to clear the search.
+- Type keywords in the search bar.
+- Input is debounced to avoid excessive API calls.
+- Click the X button to clear the search.
 
 ### Applying & Saving Filter Preset and SEO metadata based on filters
---Select categories, price ranges, or ratings.
--- Active filters appear above the product list.
--- Remove a filter with its × button or Clear All to reset.
--- Choose sorting from the dropdown: Featured, Price (Low → High / High → Low), Rating, or Name (A → Z).
--- Toasts show updates when filters are applied or errors occur.
--- Added SEO metadata based on filters.
+- Select categories, price ranges, or ratings.
+- Active filters appear above the product list.
+- Remove a filter with its × button or Clear All to reset.
+- Choose sorting from the dropdown: Featured, Price (Low → High / High → Low), Rating, or Name (A → Z).
+- Toasts show updates when filters are applied or errors occur.
+- Added SEO metadata based on filters.
 
 ### Infinite Scroll & Layout Toggle & Notifications
--- Scroll down to automatically load more products.
--- Switch between grid and list views using the toggle button.
--- Toasts show updates when filters are applied or errors occur.
--- Add <Toaster /> in your main layout to enable notifications.
+- Scroll down to automatically load more products.
+- Switch between grid and list views using the toggle button.
+- Toasts show updates when filters are applied or errors occur.
+- Add <Toaster /> in your main layout to enable notifications.
 
 ## API Source
--- Modify fetchProducts in utils/fetcher.ts to change backend or mock API.
--- Categories & Prices: Update categoryMenu and pricePresets in utils/productUtils.ts.
--- Styling: TailwindCSS classes can be customized for colors, spacing, or layout.
+- Modify fetchProducts in utils/fetcher.ts to change backend or mock API.
+- Categories & Prices: Update categoryMenu and pricePresets in utils/productUtils.ts.
+- Styling: TailwindCSS classes can be customized for colors, spacing, or layout.
 
 ## Notes & Best Practices
--- The app is initially SSR loaded and CSR-focused for fast user interactions.
--- AbortController cancels pending requests when filters or search change.
--- Debounced search improves performance and user experience.
--- URL-driven state ensures shareable links with filters applied.
--- SEO Metatags should be present
--- Skeleton loaders maintain UI stability during data fetch.
+- The app is initially SSR loaded and CSR-focused for fast user interactions.
+- AbortController cancels pending requests when filters or search change.
+- Debounced search improves performance and user experience.
+- URL-driven state ensures shareable links with filters applied.
+- SEO Metatags should be present
+- Skeleton loaders maintain UI stability during data fetch.
 
 ## 📁 Project Structure
 
@@ -119,3 +119,29 @@ client/
 ![Screenshots](./app/assets/4.png)
 ![Screenshots](./app/assets/5.png)
 ![Screenshots](./app/assets/6.png)
+
+### Performance Decisions
+
+ - Debounced Search Input: By implementing a 500ms debounce on handleSearchInput, we prevent "API spamming." This ensures that network requests and heavy filtering logic only fire once the user has finished typing, significantly reducing CPU and network overhead.
+ 
+ - Request Cancellation (AbortController): We use abortControllerRef to cancel "stale" fetch requests. If a user changes filters while a previous fetch is still in progress, the old request is killed immediately. This prevents race conditions where old data might arrive late and overwrite the newest results.
+ 
+ - URL-Driven State: Using the URL as the "source of truth" for filters allows for native browser performance benefits (like the Back/Forward button) and ensures the page is SEO-friendly and shareable without adding complex global state libraries.
+ 
+ - Intersection Observer API: For infinite scrolling, we chose the IntersectionObserver over traditional "scroll" event listeners. This is offloaded to the browser's main thread more efficiently, preventing the "stuttering" often caused by high-frequency scroll events.
+ 
+ - Non-Blocking Navigation: Using navigation.push with { scroll: false } ensures that updating the URL doesn't trigger a full page jump, providing a "Single Page Application" (SPA) feel while maintaining a synchronized URL.
+ 
+
+### Known Limitations
+
+ - Client-Side Filtering Overload: The current logic runs filterAndSortProducts on the client after fetching. While fast for small batches, if the productNo (limit) is set too high, it may cause a minor UI lag on lower-end mobile devices during the render phase.
+ 
+ - Single Category Constraint: The code currently includes a logic check: currentFilters.categories.length <= 1 ? currentFilters.categories : []. This implies the backend API may only support filtering by one category at a time; selecting multiple categories in the UI might result in an empty or unfiltered fetch.
+ 
+ - Memory Growth: In a very long session of infinite scrolling, the itemList state will grow indefinitely. While not an issue for hundreds of items, thousands of items with complex DOM structures could eventually lead to increased memory usage in the browser tab.
+ 
+ - Search/Filter Coupling: Because filters and search are bundled into a single currentFilters object, any minor filter change resets the pagination (offset to 0). This is intentional for accuracy but means a user loses their scroll position when they toggle a filter.
+ 
+ - Initial Render Bypass: The firstRenderFlag avoids a double-fetch on load (since data is preloaded), but this means the very first view is not "fresh" if the preloadedProducts are cached or stale on the server side.
+ 
