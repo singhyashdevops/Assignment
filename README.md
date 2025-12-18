@@ -86,6 +86,10 @@ cd client
 -- Toasts show updates when filters are applied or errors occur.
 -- Add <Toaster /> in your main layout to enable notifications.
 
+### Saving Filter Preset and SEO metadata based on filters
+-- Toasts show updates when filters are applied or errors occur.
+-- Add <Toaster /> in your main layout to enable notifications.
+
 ## API Source
 -- Modify fetchProducts in utils/fetcher.ts to change backend or mock API.
 -- Categories & Prices: Update categoryMenu and pricePresets in utils/productUtils.ts.
@@ -121,3 +125,4 @@ client/
 ![Screenshots](./app/assets/3.png)
 ![Screenshots](./app/assets/4.png)
 ![Screenshots](./app/assets/5.png)
+![Screenshots](./app/assets/6.png)

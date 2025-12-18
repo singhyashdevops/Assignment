@@ -66,14 +66,13 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
       const data = await fetchProducts({
         limit: productNo,
         skip: currentOffset,
-        categories: currentFilters.categories.length > 1 ? [] : currentFilters.categories,
+        categories: currentFilters.categories.length <= 1 ? currentFilters.categories : [],
         signal: controller.signal,
       });
       const filteredItems = filterAndSortProducts(data.products, currentFilters);
       setItemList(prev => reset ? filteredItems : [...prev, ...filteredItems]);
       setOffset(currentOffset + data.products.length);
       setMoreAvailable(data.products.length === productNo);
-      toast.success("Product(s) fetched")
     } catch (err: any) {
       if (err.name !== 'AbortError') setMoreAvailable(false);
       toast.error("Something went wrong")
@@ -97,7 +96,6 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
     setOffset(0);
     setMoreAvailable(true);
     fetchItems(true);
-    toast.success("Filter Applied")
   }, [currentFilters]);
 
   useEffect(() => {
@@ -109,11 +107,28 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
     return () => observer.disconnect();
   }, [fetchItems, isLoading, moreAvailable]);
 
+  const copyPresetLink = () => {
+    const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+
+    if (currentUrl) {
+      navigator.clipboard.writeText(currentUrl);
+      toast.success("Preset Link Copied!", {
+        description: "Save this URL to return to these filters later."
+      });
+    }
+  };
+
+  const categoryCounts = categoryMenu.reduce((acc, cat) => {
+    // Count how many items in the full list match this category
+    acc[cat] = itemList.filter(item => item.category === cat).length;
+    return acc;
+  }, {} as Record<string, number>);
+
   return (
     <div className="flex flex-col md:flex-row gap-4 p-2 md:p-5 bg-gray-50 min-h-screen">
 
       <aside className="w-full md:w-64 shrink-0">
-        <div className="md:sticky md:top-24 space-y-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+        <div className="md:sticky md:top-19 space-y-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
 
           <section className="relative">
             <h3 className="font-bold text-sm mb-2">Search</h3>
@@ -153,19 +168,18 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
           </section>
 
           <section>
-            <h3 className="font-bold text-sm mb-2">Reviews</h3>
-            <div className="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 scrollbar-hide">
+            <h3 className="font-bold text-sm mb-2">★ Ratings</h3>
+            <div className="flex flex-row md:flex-row overflow-hidden gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb- scrollbar-hide ">
               {[4, 3, 2, 1].map(star => (
                 <button
                   key={star}
                   onClick={() => applyFilter({ ...currentFilters, minRating: star })}
-                  className={`flex items-center gap-1.5 text-xs whitespace-nowrap px-3 py-1.5 md:px-0 md:py-0 border md:border-0 rounded-full md:rounded-none transition-all ${currentFilters.minRating === star ? 'bg-amazon-orange/10 border-amazon-orange text-amazon-orange font-bold' : 'bg-white border-gray-200 text-gray-600'
+                  className={`flex bg-red-200 items-center gap-1.5 text-xs whitespace-nowrap px-2 py-1 md:px-0 md:py-0 border md:border-0 rounded-full  transition-all ${currentFilters.minRating === star ? 'bg-amazon-orange/10 border-amazon-orange text-amazon-orange font-bold' : 'bg-white border-gray-200 text-gray-600'
                     }`}
                 >
-                  <span className="text-amazon-orange text-sm leading-none">
+                  <span className="text-amazon-orange text-sm leading-none px-2 py-1 ">
                     {"★".repeat(star)}{"☆".repeat(5 - star)}
                   </span>
-                  <span className="hidden md:inline">& Up</span>
                 </button>
               ))}
             </div>
@@ -193,11 +207,19 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
             </div>
           </section>
 
-          <button
-            onClick={() => [window.location.href = '/', toast.success("Filter Removed")]}
-            className="w-full py-2 text-xs font-bold border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors active:bg-gray-100">
-            Clear All
-          </button>
+          <section className="pt-2 border-t border-gray-100">
+            <button
+              onClick={copyPresetLink}
+              className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-amazon-orange bg-amazon-orange/5 border border-amazon-orange/20 rounded-lg hover:bg-amazon-orange/10 transition-colors"
+            >
+              <span>🔗</span> Save Current View (Copy Link)
+            </button>
+
+            <p className="text-[10px] text-gray-400 mt-2 text-center">
+              Click to copy a shareable link of your current filters.
+            </p>
+          </section>
+
         </div>
       </aside>
 
@@ -232,6 +254,16 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
                 <button className="ml-1 font-bold" onClick={() => applyFilter({ ...currentFilters, minRating: 0 })}>×</button>
               </span>
             )}
+
+            {currentFilters && (
+              <span className="flex items-center bg-amber-800 text-white px-2 py-1 rounded-full text-xs">
+                <button
+                  onClick={() => [window.location.href = '/', toast.success("Filter Removed")]}>
+                  Clear All
+                </button>
+              </span>
+            )}
+
           </div>
         )}
 
@@ -244,24 +276,30 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
             <select
               value={currentFilters.sortBy}
               onChange={e => applyFilter({ ...currentFilters, sortBy: e.target.value })}
-              className="text-xs md:text-sm border border-gray-300 bg-gray-50 px-2 md:px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-amazon-orange/20 focus:border-amazon-orange cursor-pointer"
+              className="text-xs md:text-sm border border-gray-400 bg-gray-50 px-2 md:px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-amazon-orange/20 focus:border-amazon-orange cursor-pointer"
             >
-              <option value="">Sort by: Featured</option>
+              <option value="">Sort by: Default</option>
               <option value="price-asc">Price: Low to High</option>
               <option value="price-desc">Price: High to Low</option>
               <option value="rating-desc">Highest Rated</option>
               <option value="alpha">Name: A - Z</option>
             </select>
-            <div className="h-8 w-px bg-gray-200 mx-1 hidden sm:block" />
             <GridListView view={layoutView} setView={setLayoutView} />
           </div>
         </header>
 
-        <div className={layoutView === 'grid'
-          ? "grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4"
-          : "flex flex-col gap-3 md:gap-4"}>
-          {itemList.map((product, i) => <ProductCard key={`${product.id}-${i}`} product={product} view={layoutView} />)}
-          {isLoading && Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} view={layoutView} />)}
+        <div
+          className={`${layoutView === 'grid'
+            ? "grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+            : "flex flex-col gap-4"
+            }`}>
+          {itemList.map((product, i) => (
+            <ProductCard key={`${product.id}-${i}`} product={product} view={layoutView} />
+          ))}
+
+          {isLoading && Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={`loading-skeleton-${i}`} view={layoutView} />
+          ))}
         </div>
 
         {!isLoading && itemList.length === 0 && (

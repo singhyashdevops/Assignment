@@ -18,7 +18,7 @@ export default function ProductCard({ product, view }: ProductCardProps) {
         <Image src={product.thumbnail} alt={product.title} fill className="object-contain p-4" unoptimized />
         {product.discountPercentage > 10 && (
           <>
-            <span className="absolute top-2 left-0 bg-green-600 text-white text-[11px] font-bold px-2 py-1">
+            <span className="absolute top-2 left-0 bg-red-400 text-white text-[11px] font-bold px-2 py-1">
               Limited time deal
             </span>
           </>
@@ -30,7 +30,7 @@ export default function ProductCard({ product, view }: ProductCardProps) {
           <h3 className="text-sm font-medium leading-tight group-hover:text-amazon-orange line-clamp-2 mb-1">
             {product.title}
           </h3>
-          <span className="w-fit bottom-46 left-0 bg-green-600 text-white text-[11px] font-bold px-2 py-1">
+          <span className="w-fit bottom-46 left-0 bg-red-400 text-white text-[11px] font-bold px-2 py-1">
             {product.category}
           </span>
         </>
@@ -55,7 +55,7 @@ export default function ProductCard({ product, view }: ProductCardProps) {
             Get it as soon as <span className="font-bold text-gray-700">Tomorrow</span>
           </p>
 
-          {isList && (<p className="text-sm text-gray-700 mb-3 line-clamp-3">{product.description}</p>)}
+          {isList && (<p className="text-sm text-gray-500 mb-3 line-clamp-3">{product.description}</p>)}
 
           <button className="w-full bg-amazon-yellow hover:bg-amazon-orange text-black text-xs py-1.5 rounded-full shadow-sm border border-amazon-yellow hover:border-amazon-orange transition-all cursor-pointer">
             View Details

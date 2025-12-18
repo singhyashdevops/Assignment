@@ -2,14 +2,15 @@
 
 @theme {
   /* Brand Colors */
-  --color-amazon-blue: darkgreen;
-  --color-amazon-blue-light: pink;
-  --color-amazon-yellow: lightgreen;
-  --color-amazon-orange: green;
+--color-amazon-blue: #3d0c0c;        /* Deep Burgundy - replaces darkgreen */
+  --color-amazon-blue-light: #fff0f0;  /* Pale Blush - replaces pink */
+  --color-amazon-yellow: #ffb3b3;      /* Soft Coral Pink - replaces green-yellow */
+  --color-amazon-orange: #d94343;      /* Warm Family Red - replaces green */
 
-  --color-amazon-bg: #eaeded;
-  --color-amazon-gray-light: #f0f2f2;
-  --color-amazon-gray-dark: #565959;
+  /* Surface & Backgrounds */
+  --color-amazon-bg: #fcf9f9;          /* Hint of Rose-white for warmth */
+  --color-amazon-gray-light: #f4eeee;  /* Soft Warm Gray */
+  --color-amazon-gray-dark: #6e5a5a;   /* Muted Earthy Brown-Gray for text */
 
   --font-amazon: "Amazon Ember", Arial, sans-serif;
 }
@@ -22,10 +23,10 @@
   body {
     @apply bg-amazon-bg text-gray-900 antialiased;
     font-family: var(--font-amazon);
-    user-select: none;
+    /* user-select: none; */
   }
 
-  body::-webkit-scrollbar {
+  *::-webkit-scrollbar {
     display: none;
   }
 

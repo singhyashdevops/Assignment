@@ -1,6 +1,7 @@
 import { Toaster } from 'sonner';
 import './globals.css'
 import type { ReactNode } from 'react';
+import Navbar from './components/Navbar';
 
 export const metadata = {
   title: 'QuickCart',
@@ -10,8 +11,12 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>
-        {children}
+      <body className="min-h-screen bg-gray-50 flex flex-col items-center">
+        <Navbar />
+        <main className="w-full max-w-7xl ">
+          {children}
+        </main>
+
         <Toaster visibleToasts={1} position="bottom-center" />
       </body>
     </html>
