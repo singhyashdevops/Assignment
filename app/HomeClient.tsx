@@ -44,12 +44,20 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
 
   const updateQueryUrl = useCallback((filters: typeof currentFilters) => {
     const params = new URLSearchParams();
-    if (filters.categories.length) params.set('categories', filters.categories.join(','));
-    params.set('minPrice', filters.minPrice.toString());
-    params.set('maxPrice', filters.maxPrice.toString());
-    if (filters.minRating > 0) params.set('minRating', filters.minRating.toString());
-    if (filters.sortBy) params.set('sortBy', filters.sortBy);
-    if (filters.search) params.set('search', filters.search);
+    if (filters.categories.length) {
+      params.set('categories', filters.categories.join(','));
+      params.set('minPrice', filters.minPrice.toString());
+      params.set('maxPrice', filters.maxPrice.toString());
+    }
+    if (filters.minRating > 0) {
+      params.set('minRating', filters.minRating.toString())
+    }
+    if (filters.sortBy) {
+      params.set('sortBy', filters.sortBy)
+    }
+    if (filters.search) {
+      params.set('search', filters.search)
+    }
     navigation.push(`/?${params.toString()}`, { scroll: false });
   }, [navigation]);
 
@@ -92,7 +100,10 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
   };
 
   useEffect(() => {
-    if (firstRenderFlag.current) { firstRenderFlag.current = false; return; }
+    if (firstRenderFlag.current) {
+      firstRenderFlag.current = false;
+      return;
+    }
     setOffset(0);
     setMoreAvailable(true);
     fetchItems(true);
@@ -101,7 +112,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => entries[0].isIntersecting && !isLoading && moreAvailable && fetchItems(),
-      { threshold: 0.1 }
+      { threshold: 0.4 }
     );
     if (loaderRef.current) observer.observe(loaderRef.current)
     return () => observer.disconnect();
@@ -117,12 +128,6 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
       });
     }
   };
-
-  const categoryCounts = categoryMenu.reduce((acc, cat) => {
-    // Count how many items in the full list match this category
-    acc[cat] = itemList.filter(item => item.category === cat).length;
-    return acc;
-  }, {} as Record<string, number>);
 
   return (
     <div className="flex flex-col md:flex-row gap-4 p-2 md:p-5 bg-gray-50 min-h-screen">

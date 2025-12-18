@@ -68,25 +68,17 @@ cd client
 -- Input is debounced to avoid excessive API calls.
 -- Click the X button to clear the search.
 
-### Applying Filters
+### Applying & Saving Filter Preset and SEO metadata based on filters
 --Select categories, price ranges, or ratings.
 -- Active filters appear above the product list.
 -- Remove a filter with its × button or Clear All to reset.
-
-### Sorting
 -- Choose sorting from the dropdown: Featured, Price (Low → High / High → Low), Rating, or Name (A → Z).
-
-### Infinite Scroll
--- Scroll down to automatically load more products.
-
-### Layout Toggle
--- Switch between grid and list views using the toggle button.
-
-### Notifications
 -- Toasts show updates when filters are applied or errors occur.
--- Add <Toaster /> in your main layout to enable notifications.
+-- Added SEO metadata based on filters.
 
-### Saving Filter Preset and SEO metadata based on filters
+### Infinite Scroll & Layout Toggle & Notifications
+-- Scroll down to automatically load more products.
+-- Switch between grid and list views using the toggle button.
 -- Toasts show updates when filters are applied or errors occur.
 -- Add <Toaster /> in your main layout to enable notifications.
 
@@ -96,10 +88,11 @@ cd client
 -- Styling: TailwindCSS classes can be customized for colors, spacing, or layout.
 
 ## Notes & Best Practices
--- The app is CSR-focused for fast user interactions.
+-- The app is initially SSR loaded and CSR-focused for fast user interactions.
 -- AbortController cancels pending requests when filters or search change.
 -- Debounced search improves performance and user experience.
 -- URL-driven state ensures shareable links with filters applied.
+-- SEO Metatags should be present
 -- Skeleton loaders maintain UI stability during data fetch.
 
 ## 📁 Project Structure

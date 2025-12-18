@@ -23,8 +23,14 @@ export async function fetchProducts(params: FetchParams): Promise<{ products: Pr
     url.searchParams.set('limit', String(params.limit || 20));
     url.searchParams.set('skip', String(params.skip || 0));
 
+    const revalidateTime = params.revalidate ?? 3600;
+
     const response = await fetch(url.toString(), {
-        ...(params.revalidate && { next: { revalidate: params.revalidate } }),
+        // Next.js ISR settings
+        next: { 
+            revalidate: revalidateTime,
+            tags: ['products']
+        },
         signal: params.signal,
     });
 

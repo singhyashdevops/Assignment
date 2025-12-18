@@ -16,13 +16,14 @@ interface HomePageProps {
   }>;
 }
 
+// --- 1. Dynamic Metadata with Price Fix ---
 export async function generateMetadata({ searchParams }: HomePageProps): Promise<Metadata> {
   const resolvedParams = await searchParams;
 
   const rawCat = resolvedParams.categories?.split(',')[0];
   const categoryDisplay = rawCat 
     ? rawCat.charAt(0).toUpperCase() + rawCat.slice(1).replace(/-/g, ' ') 
-    : 'QuickCart';
+    : 'All Products';
 
   const minP = resolvedParams.minPrice;
   const maxP = resolvedParams.maxPrice;
@@ -31,31 +32,30 @@ export async function generateMetadata({ searchParams }: HomePageProps): Promise
   if (minP && maxP) {
     priceTag = `$${minP} - $${maxP}`;
   } else {
-    priceTag = "Starting $0.99";
+    priceTag = "Best Deals";
   }
 
-  const title = `View ${categoryDisplay} Products | ${priceTag} | QuickCart`;
-  const description = `Looking for top-quality ${categoryDisplay.toLowerCase()}? QuickCart offers the best selection ${priceTag === "Starting $0.99" ? 'at unbeatable prices' : `at ${priceTag}`}. 100% satisfaction guaranteed.`;
-
-  return { title, description };
+  return {
+    title: `Shop ${categoryDisplay} | ${priceTag} | QuickCart`,
+    description: `Explore the best ${categoryDisplay.toLowerCase()} ${priceTag !== "Best Deals" ? `starting from ${priceTag}` : ""} at QuickCart. High quality guaranteed.`,
+  };
 }
 
 export default async function HomePage({ searchParams }: HomePageProps) {
   const resolvedParams = await searchParams;
 
   const params: FetchParams = {
-    q: resolvedParams.q || undefined,
-    categories: resolvedParams.categories?.split(',') || [],
-    minPrice: Number(resolvedParams.minPrice) || 0,
-    maxPrice: Number(resolvedParams.maxPrice) || 50000,
-    minRating: Number(resolvedParams.minRating) || 0,
-    sortBy: (resolvedParams.sortBy as 'price' | 'rating' | 'title') || 'price',
-    sortOrder: (resolvedParams.sortOrder as 'asc' | 'desc') || 'asc',
-    limit: 10,
+    categories: resolvedParams.categories?.split(',').filter(Boolean) || [],
+    limit: 12,
     skip: 0,
+    revalidate: 3600 
   };
 
   const { products: initialProducts } = await fetchProducts(params);
 
-  return <HomeClient preloadedProducts={initialProducts} />;
+  return (
+    <HomeClient 
+      preloadedProducts={initialProducts} 
+    />
+  );
 }

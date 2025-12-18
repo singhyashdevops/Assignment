@@ -42,4 +42,5 @@ export interface FetchParams {
   sortOrder?: 'asc' | 'desc';
   limit?: number;
   skip?: number;
+  revalidate: number;
 }
