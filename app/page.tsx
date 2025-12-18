@@ -25,19 +25,9 @@ export async function generateMetadata({ searchParams }: HomePageProps): Promise
     ? rawCat.charAt(0).toUpperCase() + rawCat.slice(1).replace(/-/g, ' ') 
     : 'All Products';
 
-  const minP = resolvedParams.minPrice;
-  const maxP = resolvedParams.maxPrice;
-  
-  let priceTag = "";
-  if (minP && maxP) {
-    priceTag = `$${minP} - $${maxP}`;
-  } else {
-    priceTag = "Best Deals";
-  }
-
   return {
-    title: `Shop ${categoryDisplay} | ${priceTag} | QuickCart`,
-    description: `Explore the best ${categoryDisplay.toLowerCase()} ${priceTag !== "Best Deals" ? `starting from ${priceTag}` : ""} at QuickCart. High quality guaranteed.`,
+    title: `Shop ${categoryDisplay} | QuickCart`,
+    description: `Explore the best ${categoryDisplay.toLowerCase()} products at QuickCart. High quality guaranteed.`,
   };
 }
 

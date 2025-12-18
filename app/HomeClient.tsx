@@ -30,12 +30,16 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
   const [currentFilters, setCurrentFilters] = useState({
     categories: queryParams.get('categories')?.split(',').filter(Boolean) || [] as string[],
     minPrice: Math.max(0, Number(queryParams.get('minPrice')) || 0),
-    maxPrice: Math.max(0, Number(queryParams.get('maxPrice')) || maxLimit),
+    maxPrice: queryParams.get('maxPrice') !== null ? Number(queryParams.get('maxPrice')) : maxLimit,
     minRating: Math.min(5, Math.max(0, Number(queryParams.get('minRating')) || 0)),
     sortBy: queryParams.get('sortBy') || '',
     search: queryParams.get('search') || ''
   });
   const [searchText, setSearchText] = useState(currentFilters.search);
+
+  // Logical Helpers
+  const isNegativeRange = currentFilters.maxPrice < currentFilters.minPrice;
+  const isZeroRange = currentFilters.maxPrice - currentFilters.minPrice === 0;
 
   const applyFilter = (filters: typeof currentFilters) => {
     setCurrentFilters(filters);
@@ -54,6 +58,15 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
   }, [navigation]);
 
   const fetchItems = useCallback(async (reset = false) => {
+    // PREVENT FETCH if range is invalid or zero
+    if (isNegativeRange || isZeroRange) {
+        if (reset) {
+            setItemList([]);
+            setMoreAvailable(false);
+        }
+        return;
+    }
+
     if (isLoading || (!moreAvailable && !reset)) return;
 
     abortControllerRef.current?.abort();
@@ -79,7 +92,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, offset, currentFilters, moreAvailable]);
+  }, [isLoading, offset, currentFilters, moreAvailable, isNegativeRange, isZeroRange]);
 
   const handleSearchInput = (text: string) => {
     setSearchText(text);
@@ -109,7 +122,6 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
 
   const copyPresetLink = () => {
     const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
-
     if (currentUrl) {
       navigator.clipboard.writeText(currentUrl);
       toast.success("Preset Link Copied!", {
@@ -209,7 +221,6 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
             >
               <span>🔗</span> Save Current View (Copy Link)
             </button>
-
             <p className="text-[10px] text-gray-400 mt-2 text-center">
               Click to copy a shareable link of your current filters.
             </p>
@@ -237,8 +248,8 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
             ))}
 
             {(currentFilters.minPrice > 0 || currentFilters.maxPrice < maxLimit) && (
-              <span className={`flex items-center px-2 py-1 rounded-full text-xs ${currentFilters.maxPrice <= 0 ? 'bg-red-100 text-red-700' : 'bg-amazon-orange/10 text-amazon-orange'}`}>
-                {currentFilters.maxPrice <= 0 ? "Invalid Price Range" : `$${currentFilters.minPrice} - $${currentFilters.maxPrice}`}
+              <span className={`flex items-center px-2 py-1 rounded-full text-xs ${isNegativeRange ? 'bg-red-100 text-red-700' : 'bg-amazon-orange/10 text-amazon-orange'}`}>
+                {isNegativeRange ? "Invalid Price Range" : `$${currentFilters.minPrice} - $${currentFilters.maxPrice}`}
                 <button className="ml-1 font-bold" onClick={() => applyFilter({ ...currentFilters, minPrice: 0, maxPrice: maxLimit })}>×</button>
               </span>
             )}
@@ -265,7 +276,9 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
         <header className="bg-white p-3 md:p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row gap-3 justify-between sm:items-center">
           <div>
             <h2 className="text-lg md:text-xl font-bold italic text-gray-800">Results</h2>
-            <p className="text-[10px] md:text-xs text-gray-500 uppercase tracking-wider">{itemList.length} Products Found</p>
+            <p className="text-[10px] md:text-xs text-gray-500 uppercase tracking-wider">
+               {(!isNegativeRange && !isZeroRange) ? itemList.length : 0} Products Found
+            </p>
           </div>
           <div className="flex items-center justify-between sm:justify-end gap-3">
             <select
@@ -288,7 +301,8 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
             ? "grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
             : "flex flex-col gap-4"
             }`}>
-          {itemList.map((product, i) => (
+          {/* ONLY map products if the range is valid */}
+          {!isNegativeRange && !isZeroRange && itemList.map((product, i) => (
             <ProductCard key={`${product.id}-${i}`} product={product} view={layoutView} />
           ))}
 
@@ -297,28 +311,53 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
           ))}
         </div>
 
-        {!isLoading && itemList.length === 0 && (
+        {/* --- FIXED UI CHECKS START --- */}
+        {!isLoading && (itemList.length === 0 || isNegativeRange || isZeroRange) && (
           <div className="text-center py-16 bg-white rounded-xl border-2 border-dashed border-red-100 shadow-inner">
-            <div className="text-5xl mb-4">💸</div>
-            {currentFilters.minPrice <= 0 ? (
+            
+            {/* 1. NEGATIVE RANGE UI */}
+            {isNegativeRange ? (
               <div className="space-y-2">
-                <p className="text-gray-500 max-w-xs mx-auto text-sm">Please select a valid range to view products.</p>
+                <div className="text-5xl mb-4">🚫</div>
+                <h2 className="text-xl font-bold text-red-600">Wrong Search Request</h2>
+                <p className="text-gray-500 max-w-xs mx-auto text-sm">Min price (${currentFilters.minPrice}) cannot be higher than Max price (${currentFilters.maxPrice}).</p>
+                <button
+                  onClick={() => applyFilter({ ...currentFilters, minPrice: 0, maxPrice: maxLimit })}
+                  className="mt-4 px-8 py-2.5 bg-red-600 text-white rounded-full font-bold shadow-lg hover:scale-105 transition-transform"
+                >
+                  Fix Price Range
+                </button>
+              </div>
+            ) : 
+
+            /* 2. ZERO RANGE UI */
+            isZeroRange ? (
+              <div className="space-y-2">
+                <div className="text-5xl mb-4">🔍</div>
+                <h2 className="text-xl font-bold text-gray-800">No Products Found</h2>
+                <p className="text-gray-500 max-w-xs mx-auto text-sm">Searching for an exact price of ${currentFilters.minPrice} didn't yield results. Try a wider range.</p>
                 <button
                   onClick={() => applyFilter({ ...currentFilters, minPrice: 0, maxPrice: maxLimit })}
                   className="mt-4 px-8 py-2.5 bg-amazon-orange text-white rounded-full font-bold shadow-lg hover:scale-105 transition-transform"
                 >
-                  Reset
+                  Reset Price
                 </button>
               </div>
-            ) : (
-              <div>
+            ) : 
+
+            /* 3. DEFAULT NO RESULTS UI */
+            (
+              <div className="space-y-2">
+                <div className="text-5xl mb-4">💸</div>
                 <p className="text-gray-500 font-medium">No products match your filters.</p>
                 <button onClick={() => window.location.href = '/'} className="text-amazon-blue underline mt-2">Clear all filters</button>
               </div>
             )}
           </div>
         )}
-        {moreAvailable && <div ref={loaderRef} className="h-10 w-full" />}
+        {/* --- FIXED UI CHECKS END --- */}
+
+        {moreAvailable && !isNegativeRange && !isZeroRange && <div ref={loaderRef} className="h-10 w-full" />}
       </main>
     </div>
   );
