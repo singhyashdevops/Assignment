@@ -12,6 +12,7 @@ import ProductCard from './components/ProductCard';
 import GridListView from './components/GridListView';
 import Skeleton from './components/Skeleton';
 import { toast } from 'sonner';
+import Image from 'next/image';
 
 export default function HomeClient({ preloadedProducts }: { preloadedProducts: Product[] }) {
   const queryParams = useSearchParams();
@@ -224,8 +225,26 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
             <p className="text-[10px] text-gray-500 mt-2 text-center">
               Click to copy a shareable link of your current filters.
             </p>
-          </section>
 
+            <div className="flex gap-2 justify-center mt-3">
+              <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent( typeof window !== 'undefined' ? window.location.href : '' )}`} target="_blank" rel="noopener noreferrer" >
+                <Image width={20} height={20} src="/facebook.png" alt="Facebook" className="w-6 h-6 hover:opacity-80 transition-opacity" />
+              </a>
+              <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent( typeof window !== 'undefined' ? window.location.href : '' )}&text=Check this out!`} target="_blank" rel="noopener noreferrer">
+                <Image width={20} height={20} src="/twitter.png" alt="Twitter" className="w-6 h-6 hover:opacity-80 transition-opacity" />
+              </a>
+              <a href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent( typeof window !== 'undefined' ? window.location.href : '' )}`} target="_blank" rel="noopener noreferrer" >
+                <Image width={20} height={20} src="/linkedin.png" alt="LinkedIn" className="w-6 h-6 hover:opacity-80 transition-opacity" />
+              </a>
+              <a
+                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`} rel="noopener noreferrer" target="_blank">
+                <Image width={20} height={20} src="/whatsapp.png" alt="WhatsApp" className="w-6 h-6 hover:opacity-80 transition-opacity" />
+              </a>
+              <a href="https://www.instagram.com/your_instagram_profile">
+                <Image width={20} height={20} src="/instagram.png" alt="Instagram" className="w-6 h-6 hover:opacity-80 transition-opacity" />
+              </a>
+            </div>
+          </section>
         </div>
       </aside>
 
