@@ -12,13 +12,13 @@ export default function ProductCard({ product, view }: ProductCardProps) {
   const isList = view === 'list';
 
   return (
-    <div className={`bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-shadow duration-300 flex ${isList ? 'flex-row h-64' : 'flex-col h-full'}`}>
+    <div className={`bg-white  rounded-2xl overflow-hidden hover:shadow-lg transition-shadow duration-400 flex ${isList ? 'flex-row h-64' : 'flex-col h-full'}`}>
 
-      <div className={`relative bg-amazon-gray-light shrink-0 ${isList ? 'w-64 h-full' : 'w-full h-48'}`}>
-        <Image src={product.thumbnail} alt={product.title} fill className="object-contain p-4" unoptimized />
+      <div className={`relative bg-white shrink-0 ${isList ? 'w-64 h-full' : 'w-full h-48'}`}>
+        <Image src={product.thumbnail} alt={product.title} fill className="object-contain p-1" unoptimized />
         {product.discountPercentage > 10 && (
           <>
-            <span className="absolute top-2 left-0 bg-red-400 text-white text-[11px] font-bold px-2 py-1">
+            <span className="absolute top-2 left-0 bg-red-800 text-white text-[11px] font-bold px-2 py-1">
               Limited time deal
             </span>
           </>

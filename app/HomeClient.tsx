@@ -60,11 +60,11 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
   const fetchItems = useCallback(async (reset = false) => {
     // PREVENT FETCH if range is invalid or zero
     if (isNegativeRange || isZeroRange) {
-        if (reset) {
-            setItemList([]);
-            setMoreAvailable(false);
-        }
-        return;
+      if (reset) {
+        setItemList([]);
+        setMoreAvailable(false);
+      }
+      return;
     }
 
     if (isLoading || (!moreAvailable && !reset)) return;
@@ -131,7 +131,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 p-2 md:p-5 bg-gray-50 min-h-screen">
+    <div className="flex flex-col md:flex-row gap-4 p-2 md:p-5 bg-red-100 min-h-screen">
 
       <aside className="w-full md:w-64 shrink-0">
         <div className="md:sticky md:top-19 space-y-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
@@ -164,7 +164,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
                   onClick={() => applyFilter({ ...currentFilters, minPrice: preset.min, maxPrice: preset.max })}
                   className={`text-[10px] py-2 px-1 border rounded-md transition-all ${currentFilters.minPrice === preset.min && currentFilters.maxPrice === preset.max
                     ? 'bg-amazon-yellow border-amazon-orange font-bold text-gray-900'
-                    : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-400'
+                    : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-400 hover:bg-red-100'
                     }`}
                 >
                   {preset.label}
@@ -194,9 +194,9 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
 
           <section>
             <h3 className="font-bold text-sm mb-2">Categories</h3>
-            <div className="max-h-40 md:max-h-64 overflow-y-auto pr-2 space-y-1 text-xs custom-scrollbar">
+            <div className="max-h-40 md:max-h-64 overflow-y-auto pr-2 space-y-1 text-xs">
               {categoryMenu.map(cat => (
-                <label key={cat} className="flex items-center gap-2 py-0.5 cursor-pointer hover:text-amazon-orange group">
+                <label key={cat} className="flex items-center gap-2 px-3 py-1.5 rounded-2xl cursor-pointer hover:text-amazon-orange hover:bg-red-200 group ">
                   <input
                     type="checkbox"
                     className="accent-amazon-orange h-3.5 w-3.5 rounded"
@@ -208,7 +208,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
                       applyFilter({ ...currentFilters, categories: updatedCats });
                     }}
                   />
-                  <span className="group-hover:underline text-gray-700">{formatCategoryName(cat)}</span>
+                  <span className=" text-gray-700">{formatCategoryName(cat)}</span>
                 </label>
               ))}
             </div>
@@ -219,9 +219,9 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
               onClick={copyPresetLink}
               className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-amazon-orange bg-amazon-orange/5 border border-amazon-orange/20 rounded-lg hover:bg-amazon-orange/10 transition-colors"
             >
-              <span>🔗</span> Save Current View (Copy Link)
+              Save Current View (Copy Link)
             </button>
-            <p className="text-[10px] text-gray-400 mt-2 text-center">
+            <p className="text-[10px] text-gray-500 mt-2 text-center">
               Click to copy a shareable link of your current filters.
             </p>
           </section>
@@ -277,7 +277,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
           <div>
             <h2 className="text-lg md:text-xl font-bold italic text-gray-800">Results</h2>
             <p className="text-[10px] md:text-xs text-gray-500 uppercase tracking-wider">
-               {(!isNegativeRange && !isZeroRange) ? itemList.length : 0} Products Found
+              {(!isNegativeRange && !isZeroRange) ? itemList.length : 0} Products Found
             </p>
           </div>
           <div className="flex items-center justify-between sm:justify-end gap-3">
@@ -311,10 +311,9 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
           ))}
         </div>
 
-        {/* --- FIXED UI CHECKS START --- */}
         {!isLoading && (itemList.length === 0 || isNegativeRange || isZeroRange) && (
           <div className="text-center py-16 bg-white rounded-xl border-2 border-dashed border-red-100 shadow-inner">
-            
+
             {/* 1. NEGATIVE RANGE UI */}
             {isNegativeRange ? (
               <div className="space-y-2">
@@ -328,34 +327,31 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
                   Fix Price Range
                 </button>
               </div>
-            ) : 
+            ) :
 
-            /* 2. ZERO RANGE UI */
-            isZeroRange ? (
-              <div className="space-y-2">
-                <div className="text-5xl mb-4">🔍</div>
-                <h2 className="text-xl font-bold text-gray-800">No Products Found</h2>
-                <p className="text-gray-500 max-w-xs mx-auto text-sm">Searching for an exact price of ${currentFilters.minPrice} didn't yield results. Try a wider range.</p>
-                <button
-                  onClick={() => applyFilter({ ...currentFilters, minPrice: 0, maxPrice: maxLimit })}
-                  className="mt-4 px-8 py-2.5 bg-amazon-orange text-white rounded-full font-bold shadow-lg hover:scale-105 transition-transform"
-                >
-                  Reset Price
-                </button>
-              </div>
-            ) : 
+              isZeroRange ? (
+                <div className="space-y-2">
+                  <div className="text-5xl mb-4">🔍</div>
+                  <h2 className="text-xl font-bold text-gray-800">No Products Found</h2>
+                  <p className="text-gray-500 max-w-xs mx-auto text-sm">Searching for an exact price of ${currentFilters.minPrice} dont have results. Try a wider range.</p>
+                  <button
+                    onClick={() => applyFilter({ ...currentFilters, minPrice: 0, maxPrice: maxLimit })}
+                    className="mt-4 px-8 py-2.5 bg-amazon-orange text-white rounded-full font-bold shadow-lg hover:scale-105 transition-transform"
+                  >
+                    Reset Price
+                  </button>
+                </div>
+              ) :
 
-            /* 3. DEFAULT NO RESULTS UI */
-            (
-              <div className="space-y-2">
-                <div className="text-5xl mb-4">💸</div>
-                <p className="text-gray-500 font-medium">No products match your filters.</p>
-                <button onClick={() => window.location.href = '/'} className="text-amazon-blue underline mt-2">Clear all filters</button>
-              </div>
-            )}
+                (
+                  <div className="space-y-2">
+                    <div className="text-5xl mb-4">💸</div>
+                    <p className="text-gray-500 font-medium">No products match your filters.</p>
+                    <button onClick={() => window.location.href = '/'} className="text-amazon-blue underline mt-2">Clear all filters</button>
+                  </div>
+                )}
           </div>
         )}
-        {/* --- FIXED UI CHECKS END --- */}
 
         {moreAvailable && !isNegativeRange && !isZeroRange && <div ref={loaderRef} className="h-10 w-full" />}
       </main>

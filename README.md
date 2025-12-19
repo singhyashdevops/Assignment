@@ -8,13 +8,13 @@ This project uses **React 18**, **TypeScript**, and **TailwindCSS** for styling.
 ## 🎯 Core Functionality
 
 ### Product Listing
-- Display products in **grid** and **list** views.
-- Implement **pagination OR infinite scroll** for seamless browsing.
-- Show **skeleton loaders** during data fetch.
+- Displays products in **grid** and **list** views.
+- Implemented **pagination OR infinite scroll** for seamless browsing.
+- Shows **skeleton loaders** during data fetch.
 
 ### Search
 - **Debounced search input** (300–500ms) to prevent excessive API calls.
-- **Cancelation of previous API requests** using `AbortController` when typing.
+- **Cancelation of previous API requests/ IN-Flight Requests** using `AbortController` when typing.
 - **X button** to clear the search input.
 - Search term **syncs with URL** to preserve state across reloads.
 
@@ -59,10 +59,11 @@ This project uses **React 18**, **TypeScript**, and **TailwindCSS** for styling.
 git clone <repo-url>
 cd client
 2. Install Dependencies - npm install
-3. Run Development Server - npm run dev - Open http://localhost:3000 in your browser.
+3. Run Development Server - npm run dev - Open http://localhost:3000 in the browser.
 ```
 
 ## Usage
+
 ### Searching
 - Type keywords in the search bar.
 - Input is debounced to avoid excessive API calls.
@@ -128,7 +129,7 @@ client/
  
  - URL-Driven State: Using the URL as the "source of truth" for filters allows for native browser performance benefits (like the Back/Forward button) and ensures the page is SEO-friendly and shareable without adding complex global state libraries.
  
- - Intersection Observer API: For infinite scrolling, we chose the IntersectionObserver over traditional "scroll" event listeners. This is offloaded to the browser's main thread more efficiently, preventing the "stuttering" often caused by high-frequency scroll events.
+ - Intersection Observer API: For infinite scrolling, we chose the IntersectionObserver over traditional "scroll" event listeners. This is offloaded to the browser's main thread more efficiently.
  
  - Non-Blocking Navigation: Using navigation.push with { scroll: false } ensures that updating the URL doesn't trigger a full page jump, providing a "Single Page Application" (SPA) feel while maintaining a synchronized URL.
  

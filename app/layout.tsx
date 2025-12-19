@@ -11,12 +11,11 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-gray-50 flex flex-col items-center">
+      <body className="min-h-screen bg-red-100 flex flex-col items-center">
         <Navbar />
         <main className="w-full max-w-7xl ">
           {children}
         </main>
-
         <Toaster visibleToasts={1} position="bottom-center" />
       </body>
     </html>
