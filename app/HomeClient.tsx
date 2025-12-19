@@ -195,7 +195,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
 
           <section>
             <h3 className="font-bold text-sm mb-2">Categories</h3>
-            <div className="max-h-40 md:max-h-64 overflow-y-auto pr-2 space-y-1 text-xs">
+            <div className="max-h-40 md:max-h-35 overflow-y-auto pr-2 space-y-1 text-xs">
               {categoryMenu.map(cat => (
                 <label key={cat} className="flex items-center gap-2 px-3 py-1.5 rounded-2xl cursor-pointer hover:text-amazon-orange hover:bg-red-200 group ">
                   <input
@@ -227,13 +227,13 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
             </p>
 
             <div className="flex gap-2 justify-center mt-3">
-              <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent( typeof window !== 'undefined' ? window.location.href : '' )}`} target="_blank" rel="noopener noreferrer" >
+              <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}&text=Check this!`} target="_blank" rel="noopener noreferrer" >
                 <Image width={20} height={20} src="/facebook.png" alt="Facebook" className="w-6 h-6 hover:opacity-80 transition-opacity" />
               </a>
-              <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent( typeof window !== 'undefined' ? window.location.href : '' )}&text=Check this out!`} target="_blank" rel="noopener noreferrer">
+              <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}&text=Check this out!`} target="_blank" rel="noopener noreferrer">
                 <Image width={20} height={20} src="/twitter.png" alt="Twitter" className="w-6 h-6 hover:opacity-80 transition-opacity" />
               </a>
-              <a href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent( typeof window !== 'undefined' ? window.location.href : '' )}`} target="_blank" rel="noopener noreferrer" >
+              <a href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`} target="_blank" rel="noopener noreferrer" >
                 <Image width={20} height={20} src="/linkedin.png" alt="LinkedIn" className="w-6 h-6 hover:opacity-80 transition-opacity" />
               </a>
               <a
