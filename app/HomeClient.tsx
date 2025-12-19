@@ -199,6 +199,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
               {categoryMenu.map(cat => (
                 <label key={cat} className="flex items-center gap-2 px-3 py-1.5 rounded-2xl cursor-pointer hover:text-amazon-orange hover:bg-red-200 group ">
                   <input
+                  disabled={currentFilters.categories.length > 3 ? true : false}
                     type="checkbox"
                     className="accent-amazon-orange h-3.5 w-3.5 rounded"
                     checked={currentFilters.categories.includes(cat)}
@@ -236,8 +237,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
               <a href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`} target="_blank" rel="noopener noreferrer" >
                 <Image width={20} height={20} src="/linkedin.png" alt="LinkedIn" className="w-6 h-6 hover:opacity-80 transition-opacity" />
               </a>
-              <a
-                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`} rel="noopener noreferrer" target="_blank">
+              <a href={`https://api.whatsapp.com/send?text=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`} rel="noopener noreferrer" target="_blank">
                 <Image width={20} height={20} src="/whatsapp.png" alt="WhatsApp" className="w-6 h-6 hover:opacity-80 transition-opacity" />
               </a>
               <a href="https://www.instagram.com/your_instagram_profile">
@@ -294,7 +294,10 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
 
         <header className="bg-white p-3 md:p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row gap-3 justify-between sm:items-center">
           <div>
-            <h2 className="text-lg md:text-xl font-bold italic text-gray-800">Results</h2>
+            <h2 className="text-lg md:text-xl font-bold italic text-gray-800">
+              {currentFilters.categories.length ? `Products in ${currentFilters.categories.join(', ')}` : "All Products"}
+            </h2>
+
             <p className="text-[10px] md:text-xs text-gray-500 uppercase tracking-wider">
               {(!isNegativeRange && !isZeroRange) ? itemList.length : 0} Products Found
             </p>
@@ -332,8 +335,6 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
 
         {!isLoading && (itemList.length === 0 || isNegativeRange || isZeroRange) && (
           <div className="text-center py-16 bg-white rounded-xl border-2 border-dashed border-red-100 shadow-inner">
-
-            {/* 1. NEGATIVE RANGE UI */}
             {isNegativeRange ? (
               <div className="space-y-2">
                 <div className="text-5xl mb-4">🚫</div>
