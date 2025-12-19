@@ -31,6 +31,8 @@ export async function generateMetadata({ searchParams }: HomePageProps): Promise
   };
 }
 
+
+
 export default async function HomePage({ searchParams }: HomePageProps) {
   const resolvedParams = await searchParams;
 
@@ -44,8 +46,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const { products: initialProducts } = await fetchProducts(params);
 
   return (
-    <HomeClient 
-      preloadedProducts={initialProducts} 
-    />
+    <HomeClient  preloadedProducts={initialProducts} />
   );
 }

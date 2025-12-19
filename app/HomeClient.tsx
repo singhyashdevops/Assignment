@@ -37,16 +37,18 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
     search: queryParams.get('search') || ''
   });
   const [searchText, setSearchText] = useState(currentFilters.search);
-
-  // Logical Helpers
+  const [mounted, setMounted] = useState(false);
+  
+  const currentUrl = mounted ? window.location.href : '';
+  
   const isNegativeRange = currentFilters.maxPrice < currentFilters.minPrice;
   const isZeroRange = currentFilters.maxPrice - currentFilters.minPrice === 0;
-
+  
   const applyFilter = (filters: typeof currentFilters) => {
     setCurrentFilters(filters);
     updateQueryUrl(filters);
   };
-
+  
   const updateQueryUrl = useCallback((filters: typeof currentFilters) => {
     const params = new URLSearchParams();
     if (filters.categories.length) params.set('categories', filters.categories.join(','));
@@ -57,9 +59,8 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
     if (filters.search) params.set('search', filters.search);
     navigation.push(`/?${params.toString()}`, { scroll: false });
   }, [navigation]);
-
+  
   const fetchItems = useCallback(async (reset = false) => {
-    // PREVENT FETCH if range is invalid or zero
     if (isNegativeRange || isZeroRange) {
       if (reset) {
         setItemList([]);
@@ -67,13 +68,13 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
       }
       return;
     }
-
+    
     if (isLoading || (!moreAvailable && !reset)) return;
-
+    
     abortControllerRef.current?.abort();
     const controller = new AbortController();
     abortControllerRef.current = controller;
-
+    
     setIsLoading(true);
     try {
       const currentOffset = reset ? 0 : offset;
@@ -94,32 +95,49 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
       setIsLoading(false);
     }
   }, [isLoading, offset, currentFilters, moreAvailable, isNegativeRange, isZeroRange]);
-
+  
   const handleSearchInput = (text: string) => {
     setSearchText(text);
     searchDebounceRef.current && clearTimeout(searchDebounceRef.current);
+    
     searchDebounceRef.current = setTimeout(() => {
       const updated = { ...currentFilters, search: text };
       setCurrentFilters(updated);
       updateQueryUrl(updated);
     }, 500);
+    
   };
-
+  
   useEffect(() => {
     if (firstRenderFlag.current) { firstRenderFlag.current = false; return; }
     setOffset(0);
     setMoreAvailable(true);
     fetchItems(true);
   }, [currentFilters]);
-
+  
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => entries[0].isIntersecting && !isLoading && moreAvailable && fetchItems(),
       { threshold: 0.1 }
     );
     if (loaderRef.current) observer.observe(loaderRef.current)
-    return () => observer.disconnect();
+      return () => observer.disconnect();
   }, [fetchItems, isLoading, moreAvailable]);
+  
+    useEffect(() => {
+      setMounted(true);
+    }, []);
+
+  useEffect(() => {
+    setCurrentFilters({
+      categories: queryParams.get('categories')?.split(',').filter(Boolean) || [],
+      minPrice: Number(queryParams.get('minPrice')) || 0,
+      maxPrice: queryParams.get('maxPrice') !== null ? Number(queryParams.get('maxPrice')) : maxLimit,
+      minRating: Number(queryParams.get('minRating')) || 0,
+      sortBy: queryParams.get('sortBy') || '',
+      search: queryParams.get('search') || ''
+    });
+  }, [queryParams]);
 
   const copyPresetLink = () => {
     const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
@@ -199,7 +217,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
               {categoryMenu.map(cat => (
                 <label key={cat} className="flex items-center gap-2 px-3 py-1.5 rounded-2xl cursor-pointer hover:text-amazon-orange hover:bg-red-200 group ">
                   <input
-                  disabled={currentFilters.categories.length > 3 ? true : false}
+                    disabled={currentFilters.categories.length > 3 ? true : false}
                     type="checkbox"
                     className="accent-amazon-orange h-3.5 w-3.5 rounded"
                     checked={currentFilters.categories.includes(cat)}
@@ -228,20 +246,14 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
             </p>
 
             <div className="flex gap-2 justify-center mt-3">
-              <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}&text=Check this!`} target="_blank" rel="noopener noreferrer" >
-                <Image width={20} height={20} src="/facebook.png" alt="Facebook" className="w-6 h-6 hover:opacity-80 transition-opacity" />
-              </a>
-              <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}&text=Check this out!`} target="_blank" rel="noopener noreferrer">
+              <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}`} target="_blank" rel="noopener noreferrer">
                 <Image width={20} height={20} src="/twitter.png" alt="Twitter" className="w-6 h-6 hover:opacity-80 transition-opacity" />
               </a>
-              <a href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`} target="_blank" rel="noopener noreferrer" >
+              <a href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(currentUrl)}}`} target="_blank" rel="noopener noreferrer" >
                 <Image width={20} height={20} src="/linkedin.png" alt="LinkedIn" className="w-6 h-6 hover:opacity-80 transition-opacity" />
               </a>
-              <a href={`https://api.whatsapp.com/send?text=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`} rel="noopener noreferrer" target="_blank">
+              <a href={`https://api.whatsapp.com/send?text=${encodeURIComponent(currentUrl)}`} rel="noopener noreferrer" target="_blank">
                 <Image width={20} height={20} src="/whatsapp.png" alt="WhatsApp" className="w-6 h-6 hover:opacity-80 transition-opacity" />
-              </a>
-              <a href="https://www.instagram.com/your_instagram_profile">
-                <Image width={20} height={20} src="/instagram.png" alt="Instagram" className="w-6 h-6 hover:opacity-80 transition-opacity" />
               </a>
             </div>
           </section>
@@ -323,7 +335,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
             ? "grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
             : "flex flex-col gap-4"
             }`}>
-          {/* ONLY map products if the range is valid */}
+     
           {!isNegativeRange && !isZeroRange && itemList.map((product, i) => (
             <ProductCard key={`${product.id}-${i}`} product={product} view={layoutView} />
           ))}
