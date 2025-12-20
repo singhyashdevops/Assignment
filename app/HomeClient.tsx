@@ -310,9 +310,9 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
               {currentFilters.categories.length ? `Products in ${currentFilters.categories.join(', ')}` : "All Products"}
             </h2>
 
-            <p className="text-[10px] md:text-xs text-gray-500 uppercase tracking-wider">
+            {/* <p className="text-[10px] md:text-xs text-gray-500 uppercase tracking-wider">
               {(!isNegativeRange && !isZeroRange) ? itemList.length : 0} Products Found
-            </p>
+            </p> */}
           </div>
           <div className="flex items-center justify-between sm:justify-end gap-3">
             <select
