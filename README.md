@@ -146,3 +146,26 @@ client/
  
  - Initial Render Bypass: The firstRenderFlag avoids a double-fetch on load (since data is preloaded), but this means the very first view is not "fresh" if the preloadedProducts are cached or stale on the server side.
  
+ ### Edge Cses Handled
+
+ - API Race Conditions:  Cancled in-flight requests using AbortController to prevent mismatched results.
+ 
+ - Search Debouncing: Added debounce to user input to avoid unnecessary API calls on every keystroke.
+ 
+ - Invalid Price Ranges: Blocked API calls and showed a UI error when minPrice > maxPrice.
+ 
+ - Next.js 15 Async Params: Handled URL parameters using await as per the latest Next.js standard.
+ 
+ - Hydration Error Prevention: Used a mounted state to prevent server–client HTML mismatches.
+ 
+ - Infinite Scroll Limits: Checked moreAvailable to stop background fetches when no more data exists.
+ 
+ - Empty Search Results: Displayed a clean “No Results” UI with a “Clear All” option when filters return nothing.
+ 
+ - SEO & Deep Linking: Synced dynamic metadata with URL state so filtered pages are shareable and indexable.
+ 
+ - Memory Leaks: Properly disconnected IntersectionObserver and cleared setTimeout on unmount.
+ 
+ - Zero-Price Range: Treated equal minPrice and maxPrice as a valid case and showed results or a proper empty state.
+ 
+ 
