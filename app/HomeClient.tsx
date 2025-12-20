@@ -150,7 +150,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 p-2 md:p-5 bg-red-100 min-h-screen">
+    <div className="flex flex-col md:flex-row gap-4 p-2 md:p-2 bg-red-100 min-h-screen">
 
       <aside className="w-full md:w-64 shrink-0">
         <div className="md:sticky md:top-19 space-y-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
