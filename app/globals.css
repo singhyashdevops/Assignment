@@ -1,19 +1,26 @@
 @import "tailwindcss";
 
 @theme {
-  /* Brand Colors */
---color-amazon-blue: #3d0c0c;        /* Deep Burgundy - replaces darkgreen */
-  --color-amazon-blue-light: #fff0f0;  /* Pale Blush - replaces pink */
-  --color-amazon-yellow: #ffb3b3;      /* Soft Coral Pink - replaces green-yellow */
-  --color-amazon-orange: #d94343;      /* Warm Family Red - replaces green */
+--color-amazon-orange: #008000;       /* main accent green */
+--color-amazon-yellow: #00a000;       /* lighter accent green */
+--color-amazon-blue: #006400;         /* darker green for secondary accents */
+--color-amazon-blue-light: #00ff00;   /* very light green for hover or subtle highlights */
 
-  /* Surface & Backgrounds */
-  --color-amazon-bg: #fcf9f9;          /* Hint of Rose-white for warmth */
-  --color-amazon-gray-light: #f4eeee;  /* Soft Warm Gray */
-  --color-amazon-gray-dark: #6e5a5a;   /* Muted Earthy Brown-Gray for text */
+--color-amazon-bg: #ffffff;           /* dark green background */
+--color-amazon-surface: #123812;      /* slightly lighter green for cards/containers */
+
+--color-amazon-gray-light: #1f3a1f;   /* light green-gray for borders/hover states */
+--color-amazon-gray: #2e5a2e;         /* medium green for text/icons */
+--color-amazon-gray-dark: #0b1a0b;     /* dark green / near-black elements */
+
+--color-amazon-text-dark: black;     /* main text in pale green */
+--color-amazon-text-light: #000000;    /* secondary text / placeholders in muted green */
+
+--font-amazon: "Amazon Ember", Arial, sans-serif;
 
   --font-amazon: "Amazon Ember", Arial, sans-serif;
 }
+
 
 @layer base {
   * {
@@ -21,22 +28,38 @@
   }
 
   body {
-    @apply bg-amazon-bg text-gray-900 antialiased;
+    background-color: var(--color-amazon-bg);
+    color: var(--color-amazon-text-dark);
     font-family: var(--font-amazon);
-    /* user-select: none; */
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--color-amazon-orange);
   }
 
   *::-webkit-scrollbar {
     display: none;
   }
-
-  a {
-    @apply no-underline text-inherit hover:text-amazon-orange transition-colors;
-  }
 }
+
 
 @layer components {
   .btn-amazon {
-    @apply bg-amazon-yellow hover:bg-amazon-orange text-black px-4 py-1.5 rounded-full shadow-sm text-sm transition-all text-center;
+    background-color: var(--color-amazon-yellow);
+    color: #000;
+    padding: 0.375rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+  }
+
+  .btn-amazon:hover {
+    background-color: var(--color-amazon-orange);
   }
 }

@@ -12,13 +12,13 @@ export default function ProductCard({ product, view }: ProductCardProps) {
   const isList = view === 'list';
 
   return (
-    <div className={`bg-white  rounded-2xl overflow-hidden hover:shadow-lg transition-shadow duration-400 flex ${isList ? 'flex-row h-64' : 'flex-col h-full'}`}>
+    <div className={`bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-shadow duration-400 flex ${isList ? 'flex-row h-64' : 'flex-col h-full'}`}>
 
       <div className={`relative bg-white shrink-0 ${isList ? 'w-64 h-full' : 'w-full h-48'}`}>
         <Image src={product.thumbnail} alt={product.title} fill className="object-contain p-1" unoptimized />
         {product.discountPercentage > 10 && (
           <>
-            <span className="absolute top-2 left-0 bg-red-800 text-white text-[11px] font-bold px-2 py-1">
+            <span className="absolute top-2 left-0 bg-amazon-gray-dark text-white text-[11px] font-bold px-2 py-1">
               Limited time deal
             </span>
           </>
@@ -30,9 +30,9 @@ export default function ProductCard({ product, view }: ProductCardProps) {
           <h3 className="text-sm font-medium leading-tight group-hover:text-amazon-orange line-clamp-2 mb-1">
             {product.title}
           </h3>
-          <span className="w-fit bottom-46 left-0 bg-red-400 text-white text-[11px] font-bold px-2 py-1">
+          {/* <span className="w-full text-center bottom-46 left-0 bg-amazon-orange text-white text-[11px] font-bold px-2 py-1">
             {product.category}
-          </span>
+          </span> */}
         </>
 
         <div className="flex items-center gap-1 mb-1">

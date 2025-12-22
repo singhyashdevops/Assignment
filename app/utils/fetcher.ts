@@ -26,7 +26,6 @@ export async function fetchProducts(params: FetchParams): Promise<{ products: Pr
     const revalidateTime = params.revalidate ?? 3600;
 
     const response = await fetch(url.toString(), {
-        // Next.js ISR settings
         next: { 
             revalidate: revalidateTime,
             tags: ['products']

@@ -6,8 +6,8 @@ interface ToggleProps {
 }
 
 export default function GridListView({ view, setView }: ToggleProps) {
-  const activeClass = "bg-amazon-yellow text-amazon-blue";
-  const inactiveClass = "bg-white text-amazon-gray-dark hover:bg-amazon-gray-light";
+  const activeClass = "bg-amazon-yellow text-white";
+  const inactiveClass = "bg-white text-amazon-gray-dark";
 
   return (
     <div className="inline-flex rounded-md shadow-sm border border-gray-300 overflow-hidden bg-white">
