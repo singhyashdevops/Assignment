@@ -1,6 +1,5 @@
 import HomeClient from './HomeClient';
-import { fetchProducts } from './utils/fetcher';
-import { FetchParams } from './types/types';
+import { fetchProducts, FetchParams } from './utils/fetcher';
 import { Metadata } from 'next';
 
 interface HomePageProps {
@@ -39,9 +38,6 @@ export async function generateMetadata({ searchParams }: HomePageProps): Promise
   };
 }
 
-
-
-
 export default async function HomePage({ searchParams }: HomePageProps) {
   const resolvedParams = await searchParams;
 
@@ -49,6 +45,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     categories: resolvedParams.categories?.split(',').filter(Boolean) || [],
     limit: 12,
     skip: 0,
+    search: resolvedParams.q ?? '',
     revalidate: 3600
   };
 
