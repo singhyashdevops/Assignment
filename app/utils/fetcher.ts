@@ -1,16 +1,18 @@
 import { Product } from '../types/types';
 
-const API_BASE_URL = 'https://dummyjson.com/products';
 
 export interface FetchParams {
     categories?: string[];
     limit?: number;
     skip?: number;
+    search: string;
     signal?: AbortSignal;
     revalidate?: number;
 }
 
 export async function fetchProducts(params: FetchParams): Promise<{ products: Product[]; total: number }> {
+
+    const API_BASE_URL = 'https://dummyjson.com/products';
 
     let finalUrl = API_BASE_URL;
 
@@ -23,10 +25,12 @@ export async function fetchProducts(params: FetchParams): Promise<{ products: Pr
     url.searchParams.set('limit', String(params.limit || 20));
     url.searchParams.set('skip', String(params.skip || 0));
 
+    if (params.search) url.searchParams.set('search', params.search);
+
     const revalidateTime = params.revalidate ?? 3600;
 
     const response = await fetch(url.toString(), {
-        next: { 
+        next: {
             revalidate: revalidateTime,
             tags: ['products']
         },
@@ -37,8 +41,8 @@ export async function fetchProducts(params: FetchParams): Promise<{ products: Pr
 
     const data = await response.json();
 
-    return { 
-        products: data.products, 
-        total: data.total 
+    return {
+        products: data.products,
+        total: data.total
     };
 }

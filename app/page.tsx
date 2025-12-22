@@ -22,7 +22,7 @@ export async function generateMetadata({ searchParams }: HomePageProps): Promise
   const rawCat = resolvedParams.categories?.split(',')[0];
   const category = rawCat
     ? rawCat.charAt(0).toUpperCase() + rawCat.slice(1).replace(/-/g, ' ')
-    : 'All Products';
+    : 'All Products'; 
   const minPrice = resolvedParams.minPrice
   const maxPrice = resolvedParams.maxPrice
   const minRating = resolvedParams.minRating

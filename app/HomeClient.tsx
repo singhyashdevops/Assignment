@@ -61,41 +61,42 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
     navigation.push(`/?${params.toString()}`, { scroll: false })
   }, [navigation])
 
-  const fetchItems = useCallback(async (reset = false) => {
-    if (isNegativeRange || isZeroRange) {
-      if (reset) {
-        setItemList([])
-        setMoreAvailable(false)
-      }
-      return
+const fetchItems = useCallback(async (reset = false) => {
+  if (isNegativeRange || isZeroRange) {
+    if (reset) {
+      setMoreAvailable(false)
     }
+    return
+  }
 
-    if (isLoading || (!moreAvailable && !reset)) return
+  if (isLoading || (!moreAvailable && !reset)) return
 
-    abortControllerRef.current?.abort()
-    const controller = new AbortController()
-    abortControllerRef.current = controller
+  abortControllerRef.current?.abort()
+  const controller = new AbortController()
+  abortControllerRef.current = controller
 
-    setIsLoading(true)
-    try {
-      const currentOffset = reset ? 0 : offset
-      const data = await fetchProducts({
-        limit: productNo,
-        skip: currentOffset,
-        categories: currentFilters.categories.length <= 1 ? currentFilters.categories : [],
-        signal: controller.signal,
-      })
-      const filteredItems = filterAndSortProducts(data.products, currentFilters)
-      setItemList(prev => reset ? filteredItems : [...prev, ...filteredItems])
-      setOffset(currentOffset + data.products.length)
-      setMoreAvailable(data.products.length === productNo)
-    } catch (err: any) {
-      if (err.name !== 'AbortError') setMoreAvailable(false)
-      toast.error("Something went wrong")
-    } finally {
-      setIsLoading(false)
-    }
-  }, [isLoading, offset, currentFilters, moreAvailable, isNegativeRange, isZeroRange])
+  setIsLoading(true)
+  try {
+    const currentOffset = reset ? 0 : offset
+    const data = await fetchProducts({
+      limit: productNo,
+      skip: currentOffset,
+      categories: currentFilters.categories.length <= 1 ? currentFilters.categories : [],
+      signal: controller.signal,
+      search: currentFilters.search,
+    })
+    const filteredItems = filterAndSortProducts(data.products, currentFilters)
+    setItemList(prev => reset ? filteredItems : [...prev, ...filteredItems])
+    setOffset(prev => reset ? data.products.length : prev + data.products.length)
+    setMoreAvailable(data.products.length === productNo)
+  } catch (err: any) {
+    if (err.name !== 'AbortError') setMoreAvailable(false)
+    toast.error("Something went wrong")
+  } finally {
+    setIsLoading(false)
+  }
+}, [isLoading, offset, currentFilters, moreAvailable, isNegativeRange, isZeroRange])
+
 
   const handleSearchInput = (text: string) => {
     setSearchText(text)
@@ -153,7 +154,6 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
     }
   }
 
-
   useEffect(() => {
     const toggle = () => {
       if (window.scrollY > 800) { setVisible(true) }
@@ -175,7 +175,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
   return (
     <div className="flex flex-col md:flex-row gap-4 p-2 md:p-2 bg-amazon-bg min-h-screen">
 
-      <button className={`fixed z-50 bg-amazon-gray-dark text-white hover:bg-amazon-gray hover:text-white p-2 rounded border-none bottom-5 right-5 transition-opacity duration-1000 ${visible ? 'opacity-100' : 'opacity-0'}`}onClick={scrollToTop}>
+      <button className={`fixed z-50 bg-amazon-gray-dark text-white hover:bg-amazon-gray hover:text-white p-2 rounded border-none bottom-5 right-5 transition-opacity duration-1000 ${visible ? 'opacity-100' : 'opacity-0'}`} onClick={scrollToTop}>
         Back to Top
       </button>
 
@@ -230,7 +230,7 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
                     }`}
                 >
                   <span className="text-amazon-orange text-sm leading-none p-1">
-                    {"★".repeat(star)}{"☆".repeat(5-star)}
+                    {"★".repeat(star)}{"☆".repeat(5 - star)}
                   </span>
                   <span className="hidden md:inline">& Up</span>
                 </button>
