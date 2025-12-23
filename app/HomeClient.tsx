@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
@@ -65,28 +66,6 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
 
   }
 
-  const copyPresetLink = () => {
-    const currentUrl = typeof window !== 'undefined' ? window.location.href : ''
-    if (currentUrl) {
-      navigator.clipboard.writeText(currentUrl)
-      toast.success("Preset Link Copied!", {
-        description: "Save this URL to return to these filters later."
-      })
-    }
-  }
-
-
-  const updateQueryUrl = useCallback((filters: typeof currentFilters) => {
-    const params = new URLSearchParams()
-    if (filters.categories.length) params.set('categories', filters.categories.join(','))
-    params.set('minPrice', filters.minPrice.toString())
-    params.set('maxPrice', filters.maxPrice.toString())
-    if (filters.minRating > 0) params.set('minRating', filters.minRating.toString())
-    if (filters.sortBy) params.set('sortBy', filters.sortBy)
-    if (filters.search) params.set('search', filters.search)
-    navigation.push(`/?${params.toString()}`, { scroll: false })
-  }, [navigation])
-
   const fetchItems = useCallback(async (reset = false) => {
     if (isNegativeRange || isZeroRange) {
       if (reset) {
@@ -127,6 +106,27 @@ export default function HomeClient({ preloadedProducts }: { preloadedProducts: P
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  const copyPresetLink = () => {
+    const currentUrl = typeof window !== 'undefined' ? window.location.href : ''
+    if (currentUrl) {
+      navigator.clipboard.writeText(currentUrl)
+      toast.success("Preset Link Copied!", {
+        description: "Save this URL to return to these filters later."
+      })
+    }
+  }
+
+  const updateQueryUrl = useCallback((filters: typeof currentFilters) => {
+    const params = new URLSearchParams()
+    if (filters.categories.length) params.set('categories', filters.categories.join(','))
+    params.set('minPrice', filters.minPrice.toString())
+    params.set('maxPrice', filters.maxPrice.toString())
+    if (filters.minRating > 0) params.set('minRating', filters.minRating.toString())
+    if (filters.sortBy) params.set('sortBy', filters.sortBy)
+    if (filters.search) params.set('search', filters.search)
+    navigation.push(`/?${params.toString()}`, { scroll: false })
+  }, [navigation])
 
   useEffect(() => {
     if (firstRenderFlag.current) {
