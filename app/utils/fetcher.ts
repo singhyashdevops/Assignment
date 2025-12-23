@@ -1,48 +1,47 @@
-import { Product } from '../types/types';
-
+import { Product } from '../types/types'
 
 export interface FetchParams {
-    categories?: string[];
-    limit?: number;
-    skip?: number;
-    search: string;
-    signal?: AbortSignal;
-    revalidate?: number;
+  categories?: string[]
+  limit?: number
+  skip?: number
+  search?: string
+  signal?: AbortSignal
+  revalidate?: number
 }
 
-export async function fetchProducts(params: FetchParams): Promise<{ products: Product[]; total: number }> {
+export async function fetchProducts(
+  params: FetchParams
+): Promise<{ products: Product[]; total: number }> {
 
-    const API_BASE_URL = 'https://dummyjson.com/products';
+  const BASE_URL = 'https://dummyjson.com/products'
 
-    let finalUrl = API_BASE_URL;
+  const limit = params.limit ?? 20
+  const skip = params.skip ?? 0
+  const search = params.search?.trim()
+  const category = params.categories?.[0]
 
-    const primaryCategory = params.categories?.[0];
-    if (primaryCategory) {
-        finalUrl = `${API_BASE_URL}/category/${primaryCategory}`;
-    }
+  let url: URL
 
-    const url = new URL(finalUrl);
-    url.searchParams.set('limit', String(params.limit || 20));
-    url.searchParams.set('skip', String(params.skip || 0));
+  if (search) {
+    url = new URL(`${BASE_URL}/search`)
+    url.searchParams.set('q', search)
+  }
 
-    if (params.search) url.searchParams.set('search', params.search);
+  else if (category) {url = new URL(`${BASE_URL}/category/${category}`)}
 
-    const revalidateTime = params.revalidate ?? 3600;
+  else {url = new URL(BASE_URL)}
 
-    const response = await fetch(url.toString(), {
-        next: {
-            revalidate: revalidateTime,
-            tags: ['products']
-        },
-        signal: params.signal,
-    });
+  url.searchParams.set('limit', String(limit))
+  url.searchParams.set('skip', String(skip))
 
-    if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
+  const response = await fetch(url.toString(), {signal: params.signal})
 
-    const data = await response.json();
+  if (!response.ok) {throw new Error(`Fetch failed: ${response.status}`)}
 
-    return {
-        products: data.products,
-        total: data.total
-    };
+  const data = await response.json()
+
+  return {
+    products: data.products ?? [],
+    total: data.total ?? 0
+  }
 }
